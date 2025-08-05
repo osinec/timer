@@ -112,7 +112,7 @@
         }
         .accordion-content.active {
             opacity: 1;
-            max-height: calc(80vh - 120px); /* ✅ Ограничение высоты по экрану */
+            max-height: calc(80vh - 120px); /* Ограничение по высоте экрана */
             overflow-y: auto;               /* ✅ Скролл внутри блока */
             padding: 32px;
         }
@@ -171,7 +171,7 @@
         }
         .step-content.active {
             opacity: 1;
-            max-height: calc(60vh - 80px); /* ✅ Ограничение для шагов */
+            max-height: calc(60vh - 80px); /* Ограничение по высоте */
             overflow-y: auto;              /* ✅ Скролл внутри шага */
             padding: 20px 24px 24px;
         }
@@ -235,6 +235,31 @@
         .structure-percent {
             font-weight: 700;
             color: var(--primary);
+        }
+        /* === СТИЛЬ СКРОЛЛБАРА (чтобы был виден) === */
+        .accordion-content.active::-webkit-scrollbar,
+        .step-content.active::-webkit-scrollbar {
+            width: 10px;
+        }
+        .accordion-content.active::-webkit-scrollbar-track,
+        .step-content.active::-webkit-scrollbar-track {
+            background: #f0f0f0;
+            border-radius: 6px;
+        }
+        .accordion-content.active::-webkit-scrollbar-thumb,
+        .step-content.active::-webkit-scrollbar-thumb {
+            background: #c5c5c5;
+            border-radius: 6px;
+        }
+        .accordion-content.active::-webkit-scrollbar-thumb:hover,
+        .step-content.active::-webkit-scrollbar-thumb:hover {
+            background: #a0a0a0;
+        }
+        /* Для Firefox */
+        .accordion-content.active,
+        .step-content.active {
+            scrollbar-width: thin;
+            scrollbar-color: #c5c5c5 #f0f0f0;
         }
         /* === АДАПТИВ === */
         @media (max-width: 768px) {
@@ -341,7 +366,7 @@
                         </div>
                     </div>
                 </div>
-                <!-- Пример заключения (не перемещён) -->
+                <!-- Пример заключения -->
                 <div class="example">
                     «Мы прошли путь от понимания причин прокрастинации до практических шагов по её преодолению. Помните тот вопрос в начале: “Почему мы всё откладываем?” Теперь у вас есть ответ — и, что важнее, инструменты. Начните с малого. Дайте себе шанс стать тем, кто действует, а не ждёт. Прокрастинация — не приговор, а привычка, которую можно сломать. Спасибо за внимание. Готов выслушать ваши вопросы.»
                 </div>
@@ -437,7 +462,7 @@
                     <div class="structure-item"><span class="structure-percent">20–30%</span> времени: <strong>Инструкция</strong></div>
                     <div class="structure-item"><span class="structure-percent">5–10%</span> времени: <strong>Заключение</strong></div>
                 </div>
-                <!-- Пример заключения (не перемещён) -->
+                <!-- Пример заключения -->
                 <div class="example">
                     «Мы прошли путь от понимания причин прокрастинации до практических шагов по её преодолению. Помните тот вопрос в начале: “Почему мы всё откладываем?” Теперь у вас есть ответ — и, что важнее, инструменты. Начните с малого. Дайте себе шанс стать тем, кто действует, а не ждёт. Прокрастинация — не приговор, а привычка, которую можно сломать. Спасибо за внимание. Готов выслушать ваши вопросы.»
                 </div>
@@ -545,7 +570,7 @@
                         </div>
                     </div>
                 </div>
-                <!-- Пример заключения (не перемещён) -->
+                <!-- Пример заключения -->
                 <div class="example">
                     «Мы прошли путь от понимания причин прокрастинации до практических шагов по её преодолению. Помните тот вопрос в начале: “Почему мы всё откладываем?” Теперь у вас есть ответ — и, что важнее, инструменты. Начните с малого. Дайте себе шанс стать тем, кто действует, а не ждёт. Прокрастинация — не приговор, а привычка, которую можно сломать. Спасибо за внимание. Готов выслушать ваши вопросы.»
                 </div>
