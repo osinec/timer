@@ -112,7 +112,8 @@
         }
         .accordion-content.active {
             opacity: 1;
-            max-height: 500000px; /* ✅ ИЗМЕНЕНО: было 1200px → теперь поддерживает очень длинный контент */
+            max-height: calc(80vh - 120px); /* ✅ Ограничение высоты по экрану */
+            overflow-y: auto;               /* ✅ Скролл внутри блока */
             padding: 32px;
         }
         /* === ВЛОЖЕННЫЕ ШАГИ === */
@@ -170,7 +171,8 @@
         }
         .step-content.active {
             opacity: 1;
-            max-height: 3000px; /* ✅ ИЗМЕНЕНО: было 600px → теперь поддерживает длинные шаги */
+            max-height: calc(60vh - 80px); /* ✅ Ограничение для шагов */
+            overflow-y: auto;              /* ✅ Скролл внутри шага */
             padding: 20px 24px 24px;
         }
         /* === ПРИМЕР (синий блок) === */
