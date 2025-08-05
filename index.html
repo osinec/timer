@@ -112,8 +112,8 @@
         }
         .accordion-content.active {
             opacity: 1;
-            max-height: calc(80vh - 120px); /* Ограничение по высоте экрана */
-            overflow-y: auto;               /* ✅ Скролл внутри блока */
+            max-height: 5000px; /* ✅ Увеличено в ~5 раз (вместо 80vh) */
+            overflow-y: auto;   /* Скролл при необходимости */
             padding: 32px;
         }
         /* === ВЛОЖЕННЫЕ ШАГИ === */
@@ -171,8 +171,8 @@
         }
         .step-content.active {
             opacity: 1;
-            max-height: calc(60vh - 80px); /* Ограничение по высоте */
-            overflow-y: auto;              /* ✅ Скролл внутри шага */
+            max-height: 3000px; /* ✅ Увеличено в ~5 раз (вместо 60vh) */
+            overflow-y: auto;
             padding: 20px 24px 24px;
         }
         /* === ПРИМЕР (синий блок) === */
