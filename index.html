@@ -114,7 +114,6 @@
             opacity: 1;
             overflow-y: auto;
             padding: 32px;
-            /* max-height будет устанавливаться через JS */
         }
         /* === ВЛОЖЕННЫЕ ШАГИ === */
         .step-accordion {
@@ -283,7 +282,6 @@
 <body>
     <div class="container">
         <h1>Составь свое выступление ПРАВИЛЬНО</h1>
-
         <!-- НАЧАЛО -->
         <div class="accordion">
             <div class="accordion-header">🎯 Как начать выступление</div>
@@ -361,7 +359,6 @@
                 </div>
             </div>
         </div>
-
         <!-- ОСНОВНАЯ ЧАСТЬ -->
         <div class="accordion">
             <div class="accordion-header">📚 Основная часть</div>
@@ -456,7 +453,6 @@
                 </div>
             </div>
         </div>
-
         <!-- ЗАВЕРШЕНИЕ -->
         <div class="accordion">
             <div class="accordion-header">🏁 Завершение</div>
@@ -566,36 +562,64 @@
     </div>
 
     <script>
-        // Функция для пересчёта высоты родительского .accordion-content
-        function updateAccordionHeight(contentElement) {
-            const accordionContent = contentElement.closest('.accordion-content');
-            if (!accordionContent || !accordionContent.classList.contains('active')) return;
+        // Функция для "мерцания" главного блока (переоткрытия)
+        function flickerAccordionContent(accordionContent) {
+            // Сохраняем активность
+            const wasActive = accordionContent.classList.contains('active');
+            if (!wasActive) return;
 
-            // Временно убираем max-height, чтобы измерить реальную высоту
-            accordionContent.style.maxHeight = 'none';
-            const fullHeight = accordionContent.scrollHeight + 'px';
+            // Убираем активный класс и высоту
+            accordionContent.classList.remove('active');
+            accordionContent.style.maxHeight = '0';
+            accordionContent.style.opacity = '0';
 
-            // Устанавливаем новое значение с анимацией
+            // Немедленно возвращаем (в следующем кадре)
             requestAnimationFrame(() => {
-                accordionContent.style.maxHeight = fullHeight;
+                accordionContent.classList.add('active');
+                accordionContent.style.opacity = '1';
+                // Пересчитываем высоту
+                accordionContent.style.maxHeight = accordionContent.scrollHeight + 'px';
             });
         }
 
-        // Инициализация: скрываем все контентные блоки
-        document.querySelectorAll('.accordion-content, .step-content').forEach(el => {
-            el.style.maxHeight = '0';
-            el.style.opacity = '0';
-            el.style.overflow = 'hidden';
+        // Обработчик вложенных шагов
+        document.querySelectorAll('.step-header').forEach(header => {
+            header.addEventListener('click', function () {
+                const content = this.nextElementSibling;
+                const accordionContent = this.closest('.accordion-content');
+
+                // Переключаем состояние шага
+                this.classList.toggle('active');
+                content.classList.toggle('active');
+
+                if (content.classList.contains('active')) {
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                    content.style.opacity = '1';
+                } else {
+                    content.style.maxHeight = '0';
+                    content.style.opacity = '0';
+                }
+
+                // "Мерцание" главного блока — очень быстро
+                flickerAccordionContent(accordionContent);
+
+                // Дополнительно: обновляем высоту (на всякий случай)
+                if (accordionContent.classList.contains('active')) {
+                    requestAnimationFrame(() => {
+                        accordionContent.style.maxHeight = accordionContent.scrollHeight + 'px';
+                    });
+                }
+            });
         });
 
-        // === Обработчик главных аккордеонов ===
+        // === Обработчик главных аккордеонов (остаётся без изменений) ===
         document.querySelectorAll('.accordion-header').forEach(header => {
             header.addEventListener('click', function () {
                 const accordion = this.parentElement;
                 const content = this.nextElementSibling;
                 const isActive = this.classList.contains('active');
 
-                // Закрываем все, кроме текущего
+                // Закрываем все
                 document.querySelectorAll('.accordion-header').forEach(h => {
                     if (h !== header) {
                         h.classList.remove('active');
@@ -617,37 +641,6 @@
                     content.style.maxHeight = '0';
                     content.style.opacity = '0';
                 }
-
-                // После открытия — обновляем высоту родителя
-                if (!isActive) {
-                    setTimeout(() => {
-                        updateAccordionHeight(content);
-                        accordion.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                    }, 100);
-                }
-            });
-        });
-
-        // === Обработчик вложенных шагов ===
-        document.querySelectorAll('.step-header').forEach(header => {
-            header.addEventListener('click', function () {
-                const content = this.nextElementSibling;
-                const isActive = this.classList.contains('active');
-
-                // Переключаем состояние
-                this.classList.toggle('active');
-                content.classList.toggle('active');
-
-                if (content.classList.contains('active')) {
-                    content.style.maxHeight = content.scrollHeight + 'px';
-                    content.style.opacity = '1';
-                } else {
-                    content.style.maxHeight = '0';
-                    content.style.opacity = '0';
-                }
-
-                // Обновляем высоту родительского .accordion-content
-                updateAccordionHeight(content);
             });
         });
     </script>
