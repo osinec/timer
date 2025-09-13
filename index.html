@@ -7,112 +7,100 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* === ГЛОБАЛЬНЫЙ СТИЛЬ В СТИЛЕ PAUSE === */
         :root {
-            --primary-text: #ffffff;
-            --secondary-text: #cccccc;
-            --bg-color: #000000;
-            --accent: #ffffff;
-            --hover-color: #333333;
+            --primary: #6a11cb;
+            --secondary: #3a0ca3;
+            --accent: #4cc9f0;
+            --step-color: #7209b7;
+            --example-bg: #e0f7ff;
+            --tip-bg: #fffbe6;
+            --tip-border: #f7931e;
+            --card-shadow: 0 12px 30px rgba(106, 17, 203, 0.12);
+            --hover-lift: translateY(-6px);
+            --success-bg: #e8f5e9;
+            --success-border: #4caf50;
+            --success-text: #2e7d32;
+            --personal-bg: #fff8e1;
+            --personal-border: #ffc107;
+            --personal-text: #5d4037;
+            --personal-header: #ff9800;
         }
-
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
-
         body {
-            font-family: Arial, sans-serif; /* Простой шрифт как на PAUSE */
-            background-color: var(--bg-color);
-            color: var(--primary-text);
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #f6f8ff 0%, #eef2ff 100%);
             min-height: 100vh;
-            padding: 20px;
-            line-height: 1.6;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            overflow-x: hidden;
-        }
-
-        .container {
-            max-width: 1200px;
-            width: 100%;
             padding: 40px 20px;
+            color: #333;
+            line-height: 1.7;
         }
-
+        .container {
+            max-width: 920px;
+            margin: 0 auto;
+        }
         h1 {
             text-align: center;
-            margin-bottom: 30px;
-            color: var(--primary-text);
-            font-size: 3.5rem;
-            font-weight: bold;
-            font-family: Arial, sans-serif;
-            letter-spacing: 1px;
-            text-shadow: none;
+            margin-bottom: 50px;
+            color: var(--secondary);
+            font-size: 3.2rem;
+            font-family: 'Playfair Display', serif;
+            font-weight: 800;
+            text-shadow: 2px 2px 6px rgba(0,0,0,0.1);
             position: relative;
-            padding-bottom: 15px;
+            padding-bottom: 20px;
         }
-
         h1::after {
             content: '';
             position: absolute;
             bottom: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: 80px;
-            height: 3px;
-            background: var(--accent);
+            width: 150px;
+            height: 5px;
+            background: linear-gradient(to right, var(--accent), var(--primary));
+            border-radius: 3px;
         }
 
         /* === ГЛАВНЫЕ БЛОКИ (аккордеон) === */
         .accordion {
             margin-bottom: 30px;
-            border-radius: 12px;
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: none;
-            transition: transform 0.3s ease;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            width: 100%;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.4s ease;
+            background: white;
+            border: 1px solid #e0e0f0;
+            will-change: transform;
+            transform: translateZ(0);
         }
-
         .accordion:hover {
-            transform: translateY(-3px);
-            background: rgba(255, 255, 255, 0.08);
+            transform: var(--hover-lift);
+            box-shadow: 0 24px 48px rgba(106, 17, 203, 0.18);
         }
-
         .accordion-header {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--primary-text);
-            padding: 20px 30px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 24px 30px;
             cursor: pointer;
-            font-weight: bold;
-            font-size: 1.4rem;
+            font-weight: 700;
+            font-size: 1.35rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: background 0.3s ease;
-            font-family: Arial, sans-serif;
+            transition: background 0.3s ease, transform 0.2s ease;
         }
-
-        .accordion-header:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
         .accordion-header::after {
             content: '\f0da';
             font-family: 'Font Awesome 6 Free';
             font-weight: 900;
-            font-size: 1.3rem;
-            color: var(--accent);
-            transition: transform 0.3s ease;
+            font-size: 1.4rem;
+            color: rgba(255,255,255,0.9);
+            transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
         }
-
         .accordion-header.active::after {
             transform: rotate(180deg);
             content: '\f0d7';
@@ -120,325 +108,306 @@
 
         /* === ПЛАВНОЕ ОТКРЫТИЕ ГЛАВНЫХ БЛОКОВ === */
         .accordion-content {
-            background-color: rgba(0, 0, 0, 0.3);
+            background-color: white;
             max-height: 0;
             opacity: 0;
             overflow: hidden;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 0 30px;
-            transition: all 0.5s ease;
-            color: var(--secondary-text);
+            border-top: 1px solid #eef2ff;
+            padding: 0 32px;
+            transition: 
+                max-height 0.65s cubic-bezier(0.23, 1, 0.32, 1),
+                opacity 0.4s ease;
         }
-
         .accordion-content.active {
             opacity: 1;
             overflow-y: auto;
-            padding: 30px;
-            max-height: 2000px; /* Достаточно для контента */
+            padding: 32px;
         }
 
         /* === ВЛОЖЕННЫЕ ШАГИ === */
         .step-accordion {
-            margin: 15px 0;
-            border-radius: 8px;
+            margin: 16px 0;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: none;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            transition: background 0.3s ease;
-            background: rgba(255, 255, 255, 0.03);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+            border: 1px solid #e8edf5;
+            transition: box-shadow 0.3s ease;
         }
-
         .step-header {
-            background: transparent;
-            color: var(--primary-text);
-            padding: 15px 20px;
+            background: #fdfbff;
+            color: var(--step-color);
+            padding: 20px 24px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: background 0.3s ease;
-            font-family: Arial, sans-serif;
+            transition: background 0.3s ease, border-left 0.3s ease;
+            border-left: 4px solid transparent;
         }
-
         .step-header:hover {
-            background: rgba(255, 255, 255, 0.1);
+            background: #f7f0ff;
+            border-left: 4px solid var(--accent);
         }
-
         .step-header::after {
             content: '\f0da';
             font-family: 'Font Awesome 6 Free';
             font-weight: 900;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             color: var(--accent);
-            transition: transform 0.3s ease;
+            transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
         }
-
         .step-header.active::after {
             transform: rotate(180deg);
             content: '\f0d7';
         }
-
+        .step-header.active {
+            background: #f5f0ff;
+            font-weight: 700;
+            border-left: 4px solid var(--step-color);
+        }
         .step-content {
-            background: rgba(0, 0, 0, 0.2);
+            background: #fcfbff;
             max-height: 0;
             opacity: 0;
             overflow: hidden;
-            padding: 0 20px;
-            transition: all 0.4s ease;
-            color: var(--secondary-text);
+            padding: 0 24px;
+            transition: 
+                max-height 0.55s cubic-bezier(0.23, 1, 0.32, 1),
+                opacity 0.35s ease;
         }
-
         .step-content.active {
             opacity: 1;
-            max-height: 1000px;
+            max-height: 3000px;
             overflow-y: auto;
-            padding: 15px 20px;
+            padding: 20px 24px 24px;
         }
 
-        /* === ПРИМЕР (белый/серый блок) === */
+        /* === ПРИМЕР (синий блок) === */
         .example {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            padding: 15px 20px;
-            margin: 15px 0;
+            background: var(--example-bg);
+            border-radius: 10px;
+            padding: 18px 22px;
+            margin: 16px 0;
             position: relative;
-            border-left: 3px solid var(--accent);
-            color: var(--primary-text);
-            font-family: Arial, sans-serif;
+            border-left: 4px solid var(--accent);
+            box-shadow: 0 2px 8px rgba(76, 201, 240, 0.1);
+            color: #2c5aa0;
         }
-
         .example::before {
             content: '📌 Пример:';
             position: absolute;
             top: -10px;
             left: 15px;
             background: var(--accent);
-            color: var(--bg-color);
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            font-family: Arial, sans-serif;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
         }
 
-        /* === КЛЮЧЕВЫЕ ФРАЗЫ — БЕЛЫЙ ЦВЕТ НА ТЕМНОМ ФОНЕ === */
+        /* === КЛЮЧЕВЫЕ ФРАЗЫ — КАЖДАЯ ОТДЕЛЬНО, ФИОЛЕТОВЫЙ ЦВЕТ === */
         .keyword {
-            background: rgba(255, 255, 255, 0.07);
-            border-left: 3px solid var(--accent);
-            border-radius: 8px;
+            background: #f8f0ff;
+            border-left: 4px solid var(--primary);
+            border-radius: 10px;
             padding: 12px 20px;
             margin: 12px 0;
-            color: var(--primary-text);
-            font-weight: bold;
-            font-family: Arial, sans-serif;
+            color: #4b1a7a;
+            font-weight: 600;
+            font-style: normal;
+            position: relative;
         }
-
         .keyword::before {
             content: '🔹';
             margin-right: 8px;
-            color: var(--accent);
+            color: var(--primary);
         }
 
-        /* === ЗЕЛЁНЫЙ РАЗВОРАЧИВАЕМЫЙ ПРИМЕР (теперь белый) === */
+        /* === ЗЕЛЁНЫЙ РАЗВОРАЧИВАЕМЫЙ ПРИМЕР === */
+        .final-example-accordion {
+            margin: 20px 0;
+        }
         .final-example-header {
-            background: rgba(255, 255, 255, 0.05);
-            border-left: 3px solid var(--accent);
-            border-radius: 8px;
-            padding: 15px 20px;
+            background: var(--success-bg);
+            border-left: 4px solid var(--success-border);
+            border-radius: 10px;
+            padding: 18px 22px;
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-weight: bold;
-            color: var(--primary-text);
-            font-family: Arial, sans-serif;
+            font-weight: 600;
+            color: var(--success-text);
         }
-
         .final-example-header::after {
             content: '\f0da';
             font-family: 'Font Awesome 6 Free';
             font-weight: 900;
             font-size: 1.1rem;
-            color: var(--accent);
-            transition: transform 0.3s ease;
+            color: var(--success-border);
         }
-
         .final-example-header.active::after {
             transform: rotate(180deg);
             content: '\f0d7';
         }
-
         .final-example-content {
-            background: rgba(255, 255, 255, 0.03);
-            border-left: 3px solid var(--accent);
-            border-radius: 0 8px 8px 8px;
-            padding: 15px 20px;
-            margin-top: -3px;
+            background: var(--success-bg);
+            border-left: 4px solid var(--success-border);
+            border-radius: 0 10px 10px 10px;
+            padding: 20px 22px;
+            margin-top: -4px;
             max-height: 0;
             opacity: 0;
             overflow: hidden;
-            transition: all 0.4s ease;
-            color: var(--secondary-text);
-            font-family: Arial, sans-serif;
+            transition: max-height 0.5s ease, opacity 0.4s ease;
+            color: var(--success-text);
         }
-
         .final-example-content.active {
             opacity: 1;
             max-height: 600px;
-            padding: 15px 20px;
+            padding: 20px 22px;
         }
 
-        /* === СОВЕТ (белый/серый блок) === */
+        /* === СОВЕТ (жёлтый блок) === */
         .tip-box {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            padding: 15px 20px;
+            background: var(--tip-bg);
+            border-radius: 12px;
+            padding: 18px 22px;
             margin: 20px 0;
             display: flex;
             align-items: flex-start;
-            border-left: 3px solid var(--accent);
-            color: var(--primary-text);
-            font-family: Arial, sans-serif;
+            border-left: 4px solid var(--tip-border);
         }
-
         .tip-box i {
-            font-size: 1.3rem;
-            color: var(--accent);
+            font-size: 1.4rem;
+            color: var(--tip-border);
             margin-right: 12px;
             margin-top: 2px;
         }
-
         .tip-box p {
             margin: 0;
             font-weight: 500;
+            color: #8b5a00;
         }
 
-        /* === ЛИЧНЫЙ ВЗГЛЯД (аккордеон) === */
+        /* === ЛИЧНЫЙ ВЗГЛЯД (желтый аккордеон) === */
         .personal-accordion {
             margin: 40px 0 20px;
-            border-radius: 12px;
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: none;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(255, 255, 255, 0.05);
-            width: 100%;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
+            box-shadow: 0 8px 24px rgba(255, 193, 7, 0.2);
+            border: 1px solid #ffe082;
+            background: white;
         }
-
         .personal-header {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--primary-text);
-            padding: 20px 30px;
+            background: linear-gradient(135deg, var(--personal-header) 0%, #ff6f00 100%);
+            color: white;
+            padding: 24px 30px;
             cursor: pointer;
-            font-weight: bold;
-            font-size: 1.4rem;
+            font-weight: 700;
+            font-size: 1.35rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
             transition: background 0.3s ease;
-            font-family: Arial, sans-serif;
         }
-
-        .personal-header:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
         .personal-header::after {
             content: '\f0da';
             font-family: 'Font Awesome 6 Free';
             font-weight: 900;
-            font-size: 1.3rem;
-            color: var(--accent);
-            transition: transform 0.3s ease;
+            font-size: 1.4rem;
+            color: rgba(255,255,255,0.9);
+            transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
         }
-
         .personal-header.active::after {
             transform: rotate(180deg);
             content: '\f0d7';
         }
-
         .personal-content {
-            background: rgba(0, 0, 0, 0.3);
+            background: var(--personal-bg);
             max-height: 0;
             opacity: 0;
             overflow: hidden;
-            padding: 0 30px;
-            transition: all 0.5s ease;
-            color: var(--secondary-text);
+            padding: 0 32px;
+            transition: 
+                max-height 0.65s cubic-bezier(0.23, 1, 0.32, 1),
+                opacity 0.4s ease;
         }
-
         .personal-content.active {
             opacity: 1;
             overflow-y: auto;
-            padding: 30px;
-            max-height: 2000px;
+            padding: 32px;
         }
-
         .personal-content h2 {
-            color: var(--primary-text);
+            color: var(--personal-text);
             margin-bottom: 20px;
-            font-size: 2rem;
-            font-weight: bold;
-            font-family: Arial, sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
         }
-
         .personal-content p {
             margin-bottom: 15px;
             font-size: 1.1rem;
             line-height: 1.8;
+            color: var(--personal-text);
         }
-
         .personal-content ul {
             padding-left: 25px;
             margin: 20px 0;
         }
-
         .personal-content li {
             margin-bottom: 12px;
+            color: var(--personal-text);
             line-height: 1.6;
         }
-
         .personal-content li::marker {
-            color: var(--accent);
+            color: var(--personal-header);
             font-weight: bold;
         }
 
         /* === СТИЛЬ СКРОЛЛБАРА === */
-        ::-webkit-scrollbar {
-            width: 8px;
+        .accordion-content.active::-webkit-scrollbar,
+        .step-content.active::-webkit-scrollbar,
+        .final-example-content.active::-webkit-scrollbar,
+        .personal-content.active::-webkit-scrollbar {
+            width: 10px;
         }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 4px;
+        .accordion-content.active::-webkit-scrollbar-track,
+        .step-content.active::-webkit-scrollbar-track,
+        .final-example-content.active::-webkit-scrollbar-track,
+        .personal-content.active::-webkit-scrollbar-track {
+            background: #f0f0f0;
+            border-radius: 6px;
         }
-
-        ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 4px;
+        .accordion-content.active::-webkit-scrollbar-thumb,
+        .step-content.active::-webkit-scrollbar-thumb,
+        .final-example-content.active::-webkit-scrollbar-thumb,
+        .personal-content.active::-webkit-scrollbar-thumb {
+            background: #c5c5c5;
+            border-radius: 6px;
         }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.5);
+        .accordion-content.active::-webkit-scrollbar-thumb:hover,
+        .step-content.active::-webkit-scrollbar-thumb:hover,
+        .final-example-content.active::-webkit-scrollbar-thumb:hover,
+        .personal-content.active::-webkit-scrollbar-thumb:hover {
+            background: #a0a0a0;
         }
 
         /* === АДАПТИВ === */
         @media (max-width: 768px) {
             h1 {
-                font-size: 2.5rem;
-                margin-bottom: 25px;
+                font-size: 2.4rem;
+                margin-bottom: 30px;
             }
             .accordion-header,
             .personal-header {
-                padding: 18px 22px;
-                font-size: 1.2rem;
+                padding: 20px 22px;
+                font-size: 1.15rem;
             }
             .step-header {
-                padding: 14px 16px;
+                padding: 18px 20px;
                 font-size: 1rem;
             }
             .example,
@@ -451,34 +420,122 @@
                 padding: 25px 20px;
             }
             .personal-content h2 {
-                font-size: 1.6rem;
+                font-size: 1.5rem;
                 margin-bottom: 15px;
             }
             .personal-content p {
                 font-size: 1rem;
                 margin-bottom: 12px;
             }
+            .personal-content ul {
+                padding-left: 20px;
+                margin: 15px 0;
+            }
+            .personal-content li {
+                margin-bottom: 10px;
+                font-size: 0.95rem;
+            }
+            
+            /* Оптимизация для узких экранов */
+            .tip-box,
+            .example {
+                padding: 12px 16px;
+                font-size: 0.9rem;
+            }
+            .tip-box i {
+                font-size: 1.2rem;
+                margin-right: 10px;
+            }
+            .tip-box p {
+                font-size: 0.9rem;
+            }
+            .step-content p {
+                font-size: 0.9rem;
+            }
+            .keyword {
+                font-size: 0.9rem;
+                padding: 10px 15px;
+            }
+            .final-example-header {
+                font-size: 1rem;
+                padding: 15px 18px;
+            }
+            .final-example-content {
+                font-size: 0.9rem;
+                padding: 15px 18px;
+            }
+            .example::before {
+                font-size: 0.75rem;
+                top: -8px;
+                left: 12px;
+                padding: 3px 8px;
+            }
+            .accordion-content {
+                padding: 0 20px;
+            }
+            .accordion-content.active {
+                padding: 25px 20px;
+            }
+            .step-content {
+                padding: 0 20px;
+            }
+            .step-content.active {
+                padding: 18px 20px 20px;
+            }
         }
-
+        
         @media (max-width: 480px) {
             body {
-                padding: 15px;
+                padding: 20px 15px;
             }
             h1 {
                 font-size: 2rem;
-                margin-bottom: 20px;
+                margin-bottom: 25px;
             }
             .accordion-header,
             .personal-header {
-                padding: 16px 18px;
-                font-size: 1.1rem;
+                padding: 18px 16px;
+                font-size: 1.05rem;
             }
             .step-header {
-                padding: 12px 14px;
+                padding: 15px 16px;
                 font-size: 0.95rem;
             }
-            .container {
-                padding: 30px 15px;
+            .example,
+            .tip-box,
+            .keyword,
+            .final-example-header {
+                padding: 10px 14px;
+            }
+            .tip-box p {
+                font-size: 0.85rem;
+            }
+            .step-content p {
+                font-size: 0.85rem;
+            }
+            .keyword {
+                font-size: 0.85rem;
+                padding: 8px 12px;
+            }
+            .final-example-header {
+                font-size: 0.95rem;
+                padding: 12px 15px;
+            }
+            .final-example-content {
+                font-size: 0.85rem;
+                padding: 12px 15px;
+            }
+            .personal-content {
+                padding: 20px 15px;
+            }
+            .personal-content h2 {
+                font-size: 1.3rem;
+            }
+            .personal-content p {
+                font-size: 0.9rem;
+            }
+            .personal-content li {
+                font-size: 0.9rem;
             }
         }
     </style>
