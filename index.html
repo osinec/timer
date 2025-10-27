@@ -3,905 +3,264 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Программа выступления</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Таймер достигатора</title>
     <style>
-        :root {
-            --primary: #6a11cb;
-            --secondary: #3a0ca3;
-            --accent: #4cc9f0;
-            --step-color: #7209b7;
-            --example-bg: #e0f7ff;
-            --tip-bg: #fffbe6;
-            --tip-border: #f7931e;
-            --card-shadow: 0 12px 30px rgba(106, 17, 203, 0.12);
-            --hover-lift: translateY(-6px);
-            --success-bg: #e8f5e9;
-            --success-border: #4caf50;
-            --success-text: #2e7d32;
-            --personal-bg: #fff8e1;
-            --personal-border: #ffc107;
-            --personal-text: #5d4037;
-            --personal-header: #ff9800;
-        }
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+
         body {
-            font-family: 'Montserrat', sans-serif;
-            background: linear-gradient(135deg, #f6f8ff 0%, #eef2ff 100%);
+            background: linear-gradient(135deg, #0c0c0c, #1a1a2e);
+            color: #fff;
             min-height: 100vh;
-            padding: 40px 20px;
-            color: #333;
-            line-height: 1.7;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
         }
+
         .container {
-            max-width: 920px;
-            margin: 0 auto;
-        }
-        h1 {
             text-align: center;
-            margin-bottom: 50px;
-            color: var(--secondary);
-            font-size: 3.2rem;
-            font-family: 'Playfair Display', serif;
-            font-weight: 800;
-            text-shadow: 2px 2px 6px rgba(0,0,0,0.1);
-            position: relative;
-            padding-bottom: 20px;
-        }
-        h1::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 150px;
-            height: 5px;
-            background: linear-gradient(to right, var(--accent), var(--primary));
-            border-radius: 3px;
+            max-width: 500px;
+            width: 100%;
         }
 
-        /* === ГЛАВНЫЕ БЛОКИ (аккордеон) === */
-        .accordion {
+        h1 {
             margin-bottom: 30px;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: var(--card-shadow);
-            transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.4s ease;
-            background: white;
-            border: 1px solid #e0e0f0;
-            will-change: transform;
-            transform: translateZ(0);
+            font-weight: 300;
+            letter-spacing: 2px;
+            color: #e0e0e0;
         }
-        .accordion:hover {
-            transform: var(--hover-lift);
-            box-shadow: 0 24px 48px rgba(106, 17, 203, 0.18);
+
+        .timer-display {
+            font-size: 5rem;
+            font-weight: 300;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px 20px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            letter-spacing: 3px;
+            color: #64ffda;
+            text-shadow: 0 0 10px rgba(100, 255, 218, 0.5);
         }
-        .accordion-header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-            padding: 24px 30px;
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 1.35rem;
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .time-buttons {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            transition: background 0.3s ease, transform 0.2s ease;
-        }
-        .accordion-header::after {
-            content: '\f0da';
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
-            font-size: 1.4rem;
-            color: rgba(255,255,255,0.9);
-            transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-        .accordion-header.active::after {
-            transform: rotate(180deg);
-            content: '\f0d7';
-        }
-
-        /* === ПЛАВНОЕ ОТКРЫТИЕ ГЛАВНЫХ БЛОКОВ === */
-        .accordion-content {
-            background-color: white;
-            max-height: 0;
-            opacity: 0;
-            overflow: hidden;
-            border-top: 1px solid #eef2ff;
-            padding: 0 32px;
-            transition: 
-                max-height 0.65s cubic-bezier(0.23, 1, 0.32, 1),
-                opacity 0.4s ease;
-        }
-        .accordion-content.active {
-            opacity: 1;
-            overflow-y: auto;
-            padding: 32px;
-        }
-
-        /* === ВЛОЖЕННЫЕ ШАГИ === */
-        .step-accordion {
-            margin: 16px 0;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
-            border: 1px solid #e8edf5;
-            transition: box-shadow 0.3s ease;
-        }
-        .step-header {
-            background: #fdfbff;
-            color: var(--step-color);
-            padding: 20px 24px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 1.15rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: background 0.3s ease, border-left 0.3s ease;
-            border-left: 4px solid transparent;
-        }
-        .step-header:hover {
-            background: #f7f0ff;
-            border-left: 4px solid var(--accent);
-        }
-        .step-header::after {
-            content: '\f0da';
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
-            font-size: 1.2rem;
-            color: var(--accent);
-            transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-        .step-header.active::after {
-            transform: rotate(180deg);
-            content: '\f0d7';
-        }
-        .step-header.active {
-            background: #f5f0ff;
-            font-weight: 700;
-            border-left: 4px solid var(--step-color);
-        }
-        .step-content {
-            background: #fcfbff;
-            max-height: 0;
-            opacity: 0;
-            overflow: hidden;
-            padding: 0 24px;
-            transition: 
-                max-height 0.55s cubic-bezier(0.23, 1, 0.32, 1),
-                opacity 0.35s ease;
-        }
-        .step-content.active {
-            opacity: 1;
-            max-height: 3000px;
-            overflow-y: auto;
-            padding: 20px 24px 24px;
-        }
-
-        /* === ПРИМЕР (синий блок) === */
-        .example {
-            background: var(--example-bg);
-            border-radius: 10px;
-            padding: 18px 22px;
-            margin: 16px 0;
-            position: relative;
-            border-left: 4px solid var(--accent);
-            box-shadow: 0 2px 8px rgba(76, 201, 240, 0.1);
-            color: #2c5aa0;
-        }
-        .example::before {
-            content: '📌 Пример:';
-            position: absolute;
-            top: -10px;
-            left: 15px;
-            background: var(--accent);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        /* === КЛЮЧЕВЫЕ ФРАЗЫ — КАЖДАЯ ОТДЕЛЬНО, ФИОЛЕТОВЫЙ ЦВЕТ === */
-        .keyword {
-            background: #f8f0ff;
-            border-left: 4px solid var(--primary);
-            border-radius: 10px;
-            padding: 12px 20px;
-            margin: 12px 0;
-            color: #4b1a7a;
-            font-weight: 600;
-            font-style: normal;
-            position: relative;
-        }
-        .keyword::before {
-            content: '🔹';
-            margin-right: 8px;
-            color: var(--primary);
-        }
-
-        /* === ЗЕЛЁНЫЙ РАЗВОРАЧИВАЕМЫЙ ПРИМЕР === */
-        .final-example-accordion {
-            margin: 20px 0;
-        }
-        .final-example-header {
-            background: var(--success-bg);
-            border-left: 4px solid var(--success-border);
-            border-radius: 10px;
-            padding: 18px 22px;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 600;
-            color: var(--success-text);
-        }
-        .final-example-header::after {
-            content: '\f0da';
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
-            font-size: 1.1rem;
-            color: var(--success-border);
-        }
-        .final-example-header.active::after {
-            transform: rotate(180deg);
-            content: '\f0d7';
-        }
-        .final-example-content {
-            background: var(--success-bg);
-            border-left: 4px solid var(--success-border);
-            border-radius: 0 10px 10px 10px;
-            padding: 20px 22px;
-            margin-top: -4px;
-            max-height: 0;
-            opacity: 0;
-            overflow: hidden;
-            transition: max-height 0.5s ease, opacity 0.4s ease;
-            color: var(--success-text);
-        }
-        .final-example-content.active {
-            opacity: 1;
-            max-height: 600px;
-            padding: 20px 22px;
-        }
-
-        /* === СОВЕТ (жёлтый блок) === */
-        .tip-box {
-            background: var(--tip-bg);
-            border-radius: 12px;
-            padding: 18px 22px;
-            margin: 20px 0;
-            display: flex;
-            align-items: flex-start;
-            border-left: 4px solid var(--tip-border);
-        }
-        .tip-box i {
-            font-size: 1.4rem;
-            color: var(--tip-border);
-            margin-right: 12px;
-            margin-top: 2px;
-        }
-        .tip-box p {
-            margin: 0;
-            font-weight: 500;
-            color: #8b5a00;
-        }
-
-        /* === ЛИЧНЫЙ ВЗГЛЯД (желтый аккордеон) === */
-        .personal-accordion {
-            margin: 40px 0 20px;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 8px 24px rgba(255, 193, 7, 0.2);
-            border: 1px solid #ffe082;
-            background: white;
-        }
-        .personal-header {
-            background: linear-gradient(135deg, var(--personal-header) 0%, #ff6f00 100%);
-            color: white;
-            padding: 24px 30px;
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 1.35rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: background 0.3s ease;
-        }
-        .personal-header::after {
-            content: '\f0da';
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
-            font-size: 1.4rem;
-            color: rgba(255,255,255,0.9);
-            transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-        .personal-header.active::after {
-            transform: rotate(180deg);
-            content: '\f0d7';
-        }
-        .personal-content {
-            background: var(--personal-bg);
-            max-height: 0;
-            opacity: 0;
-            overflow: hidden;
-            padding: 0 32px;
-            transition: 
-                max-height 0.65s cubic-bezier(0.23, 1, 0.32, 1),
-                opacity 0.4s ease;
-        }
-        .personal-content.active {
-            opacity: 1;
-            overflow-y: auto;
-            padding: 32px;
-        }
-        .personal-content h2 {
-            color: var(--personal-text);
+            gap: 10px;
             margin-bottom: 20px;
-            font-size: 1.8rem;
-            font-weight: 700;
-        }
-        .personal-content p {
-            margin-bottom: 15px;
-            font-size: 1.1rem;
-            line-height: 1.8;
-            color: var(--personal-text);
-        }
-        .personal-content ul {
-            padding-left: 25px;
-            margin: 20px 0;
-        }
-        .personal-content li {
-            margin-bottom: 12px;
-            color: var(--personal-text);
-            line-height: 1.6;
-        }
-        .personal-content li::marker {
-            color: var(--personal-header);
-            font-weight: bold;
         }
 
-        /* === СТИЛЬ СКРОЛЛБАРА === */
-        .accordion-content.active::-webkit-scrollbar,
-        .step-content.active::-webkit-scrollbar,
-        .final-example-content.active::-webkit-scrollbar,
-        .personal-content.active::-webkit-scrollbar {
-            width: 10px;
-        }
-        .accordion-content.active::-webkit-scrollbar-track,
-        .step-content.active::-webkit-scrollbar-track,
-        .final-example-content.active::-webkit-scrollbar-track,
-        .personal-content.active::-webkit-scrollbar-track {
-            background: #f0f0f0;
-            border-radius: 6px;
-        }
-        .accordion-content.active::-webkit-scrollbar-thumb,
-        .step-content.active::-webkit-scrollbar-thumb,
-        .final-example-content.active::-webkit-scrollbar-thumb,
-        .personal-content.active::-webkit-scrollbar-thumb {
-            background: #c5c5c5;
-            border-radius: 6px;
-        }
-        .accordion-content.active::-webkit-scrollbar-thumb:hover,
-        .step-content.active::-webkit-scrollbar-thumb:hover,
-        .final-example-content.active::-webkit-scrollbar-thumb:hover,
-        .personal-content.active::-webkit-scrollbar-thumb:hover {
-            background: #a0a0a0;
+        button {
+            padding: 15px 25px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        /* === АДАПТИВ === */
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2.4rem;
-                margin-bottom: 30px;
+        .time-btn {
+            flex: 1;
+            background: rgba(41, 98, 255, 0.1);
+            color: #2962ff;
+            border: 1px solid rgba(41, 98, 255, 0.3);
+        }
+
+        .time-btn:hover {
+            background: rgba(41, 98, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(41, 98, 255, 0.2);
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #00c853, #64dd17);
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 200, 83, 0.3);
+        }
+
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 200, 83, 0.4);
+        }
+
+        .pause-btn {
+            background: linear-gradient(135deg, #ff9100, #ffab00);
+            color: white;
+            box-shadow: 0 5px 15px rgba(255, 145, 0, 0.3);
+        }
+
+        .pause-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 145, 0, 0.4);
+        }
+
+        .reset-btn {
+            background: linear-gradient(135deg, #ff1744, #f50057);
+            color: white;
+            box-shadow: 0 5px 15px rgba(255, 23, 68, 0.3);
+        }
+
+        .reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 23, 68, 0.4);
+        }
+
+        .finished {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                color: #64ffda;
+                text-shadow: 0 0 10px rgba(100, 255, 218, 0.5);
             }
-            .accordion-header,
-            .personal-header {
-                padding: 20px 22px;
-                font-size: 1.15rem;
+            50% {
+                color: #ff1744;
+                text-shadow: 0 0 15px rgba(255, 23, 68, 0.7);
             }
-            .step-header {
-                padding: 18px 20px;
-                font-size: 1rem;
+            100% {
+                color: #64ffda;
+                text-shadow: 0 0 10px rgba(100, 255, 218, 0.5);
             }
-            .example,
-            .tip-box,
-            .keyword,
-            .final-example-header {
-                padding: 12px 16px;
-            }
-            .personal-content {
-                padding: 25px 20px;
-            }
-            .personal-content h2 {
-                font-size: 1.5rem;
-                margin-bottom: 15px;
-            }
-            .personal-content p {
-                font-size: 1rem;
-                margin-bottom: 12px;
-            }
-            .personal-content ul {
-                padding-left: 20px;
-                margin: 15px 0;
-            }
-            .personal-content li {
-                margin-bottom: 10px;
-                font-size: 0.95rem;
+        }
+
+        @media (max-width: 480px) {
+            .timer-display {
+                font-size: 3.5rem;
+                padding: 20px 15px;
             }
             
-            /* Оптимизация для узких экранов */
-            .tip-box,
-            .example {
-                padding: 12px 16px;
-                font-size: 0.9rem;
+            .time-buttons {
+                flex-direction: column;
             }
-            .tip-box i {
-                font-size: 1.2rem;
-                margin-right: 10px;
-            }
-            .tip-box p {
-                font-size: 0.9rem;
-            }
-            .step-content p {
-                font-size: 0.9rem;
-            }
-            .keyword {
-                font-size: 0.9rem;
-                padding: 10px 15px;
-            }
-            .final-example-header {
-                font-size: 1rem;
-                padding: 15px 18px;
-            }
-            .final-example-content {
-                font-size: 0.9rem;
-                padding: 15px 18px;
-            }
-            .example::before {
-                font-size: 0.75rem;
-                top: -8px;
-                left: 12px;
-                padding: 3px 8px;
-            }
-            .accordion-content {
-                padding: 0 20px;
-            }
-            .accordion-content.active {
-                padding: 25px 20px;
-            }
-            .step-content {
-                padding: 0 20px;
-            }
-            .step-content.active {
-                padding: 18px 20px 20px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            body {
-                padding: 20px 15px;
-            }
-            h1 {
-                font-size: 2rem;
-                margin-bottom: 25px;
-            }
-            .accordion-header,
-            .personal-header {
-                padding: 18px 16px;
-                font-size: 1.05rem;
-            }
-            .step-header {
-                padding: 15px 16px;
-                font-size: 0.95rem;
-            }
-            .example,
-            .tip-box,
-            .keyword,
-            .final-example-header {
-                padding: 10px 14px;
-            }
-            .tip-box p {
-                font-size: 0.85rem;
-            }
-            .step-content p {
-                font-size: 0.85rem;
-            }
-            .keyword {
-                font-size: 0.85rem;
-                padding: 8px 12px;
-            }
-            .final-example-header {
-                font-size: 0.95rem;
-                padding: 12px 15px;
-            }
-            .final-example-content {
-                font-size: 0.85rem;
-                padding: 12px 15px;
-            }
-            .personal-content {
-                padding: 20px 15px;
-            }
-            .personal-content h2 {
-                font-size: 1.3rem;
-            }
-            .personal-content p {
-                font-size: 0.9rem;
-            }
-            .personal-content li {
-                font-size: 0.9rem;
+            
+            button {
+                padding: 12px 20px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Составь свое выступление ПРАВИЛЬНО</h1>
-
-        <!-- НАЧАЛО -->
-        <div class="accordion">
-            <div class="accordion-header">🎯 Как начать выступление</div>
-            <div class="accordion-content">
-                <div class="tip-box">
-                    <i class="fas fa-lightbulb"></i>
-                    <p><strong>Совет:</strong> Вступление отвечает на главный вопрос твоего слушателя <br><b>"ЧТО В ЭТОМ ДЛЯ МЕНЯ?"</b> — Это причина, по которой он не уйдет.</p>
-                </div>
-                <div class="step-accordion">
-                    <div class="step-header"><span class="step-number">1.</span> Определи цель выступления</div>
-                    <div class="step-content">
-                        <p><strong>Цель:</strong> Информировать, убедить, обучить, продать — <b>твоя речь к этой цели будет вести</b>.</p>
-                        <div class="example">
-                            <b>Цель</b> — дать инструкцию для быстрого повышения по карьерной лестнице.
-                        </div>
-                    </div>
-                </div>
-                <div class="step-accordion">
-                    <div class="step-header"><span class="step-number">2.</span> Сформулируй основную мысль</div>
-                    <div class="step-content">
-                        <p>То, что ты хочешь донести, — в одно короткое, но запоминающееся предложение. <br><b>До 5 слов.</b> Оно должно вести к цели.</p>
-                        <div class="example">
-                            «Быстрый рост — возможен».
-                        </div>
-                    </div>
-                </div>
-                <div class="step-accordion">
-                    <div class="step-header"><span class="step-number">3.</span> Кто твоя аудитория и какая у неё цель/проблема?</div>
-                    <div class="step-content">
-                        <p><strong>Зачем:</strong> Понимание цели аудитории даст понять, на чём <b>сделать акцент в речи</b>.</p>
-                        <div class="example">
-                            <b>Аудитория:</b> Офисные работники
-                        </div>
-                        <div class="example">
-                            <b>Их цель/проблема:</b> Поздно уходят с работы, долго нет повышения — <b>выступление должно решить эту проблему</b>.
-                        </div>
-                    </div>
-                </div>
-                <div class="step-accordion">
-                    <div class="step-header"><span class="step-number">4.</span> Начни с «крючка» — захвати внимание</div>
-                    <div class="step-content">
-                        <p><strong>Варианты:</strong> Цитата, факт, юмор, история, вопрос...</p>
-                        <p><strong>Зачем:</strong> В первые секунды слушатель ищет решение своей проблемы. <b>Подбери подходящие варианты для своей темы.</b></p>
-                        <div class="example">
-                            <b>ФАКТ:</b> "По данным опроса сервиса «Авито Работа», опубликованным в июле 2024 года, в среднем россияне добиваются карьерного роста раз в 26 месяцев."
-                        </div>
-                        <div class="example">
-                            <b>ЦИТАТА:</b> "Карьера — это не то, что вам дают, а то, что вы берете."
-                        </div>
-                        <div class="example">
-                            <b>ИСТОРИЯ:</b> "История Мухтара Кента в Coca-Cola."
-                        </div>
-                        <div class="example">
-                            <b>ВОПРОС:</b> "Кто-нибудь задумывался о карьерном росте?"
-                        </div>
-                        <div class="example">
-                            <b>ЮМОР:</b> "Карьерный рост — это искусство брать на себя ответственность за ошибки начальства."
-                        </div>
-                    </div>
-                </div>
-                <div class="step-accordion">
-                    <div class="step-header"><span class="step-number">5.</span> Чётко озвучь тему и её актуальность</div>
-                    <div class="step-content">
-                        <p>Помоги слушателю понять: «Что в этом для меня?»</p>
-                        <div class="example">
-                            3 способа, чтобы двигаться по карьерной лестнице в 2 раза быстрее.
-                        </div>
-                    </div>
-                </div>
-                <div class="step-accordion">
-                    <div class="step-header"><span class="step-number">6.</span> Обозначь структуру выступления</div>
-                    <div class="step-content">
-                        <p><strong>Зачем:</strong> Помогает аудитории следить за логикой и не теряться.</p>
-                        <div class="example">
-                            «Сначала мы с вами выясним, от чего зависит повышение, каким надо быть и за что вас готово повысить начальство.»
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ЗЕЛЁНЫЙ РАЗВОРАЧИВАЕМЫЙ ПРИМЕР В КОНЦЕ -->
-                <div class="final-example-accordion">
-                    <div class="final-example-header">✅ Пример вступления</div>
-                    <div class="final-example-content">
-                        «<b>[ЦЕЛЬ]</b> Добрый день! Сегодня хочу с вами поговорить о работе, которой мы так много отдаем и в которой так медленно растем. <b>[КРЮЧОК]</b> По данным опроса сервиса «Авито Работа», опубликованным в июле 2024 года, в среднем россияне добиваются карьерного роста раз в 26 месяцев — это очень долго. <b>[ГЛ.МЫСЛЬ]</b> Быстрый карьерный рост возможен. Ваше начальство знает, за что оно готово вас повысить, а вы пока нет. <b>[АКТУАЛЬНОСТЬ]</b> Я покажу вам 3 способа быстрого роста. <b>[СТРУКТУРА]</b> Сначала мы выясним, от чего зависит повышение, каким надо быть и за что вас готово повысить начальство.»
-                    </div>
-                </div>
-            </div>
+        <h1>ТАЙМЕР ДОСТИГАТОРА</h1>
+        <div class="timer-display" id="timer">00:00</div>
+        
+        <div class="time-buttons">
+            <button class="time-btn" id="add5">+ 5 мин</button>
+            <button class="time-btn" id="add10">+ 10 мин</button>
+            <button class="time-btn" id="add15">+ 15 мин</button>
         </div>
-
-        <!-- ОСНОВНАЯ ЧАСТЬ -->
-        <div class="accordion">
-            <div class="accordion-header">📚 Основная часть</div>
-            <div class="accordion-content">
-                <div class="tip-box">
-                    <i class="fas fa-rocket"></i>
-                    <p><strong>Совет:</strong> Задача основной части — чётко и структурированно ответить на вопросы:</p>
-                </div>
-
-                <!-- КЛЮЧЕВЫЕ ФРАЗЫ — КАЖДАЯ ОТДЕЛЬНО, ФИОЛЕТОВЫЙ ЦВЕТ -->
-                <div class="keyword">[ЧТО ЭТО?]</div>
-                <div class="keyword">[КАК РАБОТАЕТ?]</div>
-                <div class="keyword">[КАКОЙ ПОЛУЧАЕТСЯ РЕЗУЛЬТАТ?]</div>
-                <div class="keyword">[ГЛ.МЫСЛЬ]</div>
-                <div class="keyword">[ИНСТРУКЦИЯ]</div>
-
-                <div class="step-accordion">
-                    <div class="step-header"><span class="step-number">1.</span> Структурируйте лекционную часть</div>
-                    <div class="step-content">
-                        <p>Разделите эту часть на: <strong>Что это?</strong> - <strong>Как это работает?</strong> - <strong>Какой получается результат?</strong></p>
-                        <div class="tip-box">
-                            <i class="fas fa-rocket"></i>
-                            <p><strong>Совет:</strong> В этой части тебе нужно подробно, но не перебарщивая, ответить на каждый вопрос. <br>Если хочешь результат еще лучше - к каждому пункту задай вопрос <b>"Что слушатель из моего выступления может не понять?"</b> - и после добавь это в свое выступление.<br/></p>
-                        </div>
-                        <div class="example">
-                            "<b>[ЧТО?]</b> Итак, первое, в чем мы разберемся — это что такое повышение? .... Это плата за инициативу <b>[КАК ЭТО РАБОТАЕТ?]</b> Каждый раз, когда вы совершаете... начальство довольно. <b>[КАКОЙ ПОЛУЧАЕТСЯ РЕЗУЛЬТАТ?]</b> В итоге мы с вами имеем 1...2...3..."
-                        </div>
-                    </div>
-                </div>
-                <div class="step-accordion">
-                    <div class="step-header"><span class="step-number">2.</span> Выделите основную мысль</div>
-                    <div class="step-content">
-                        <p>Ты составлял главную мысль для вступления. Тут ее надо повторить.</p>
-                        <div class="example">
-                            "Быстрый рост возможен."
-                        </div>
-                    </div>
-                </div>
-                <div class="step-accordion">
-                    <div class="step-header"><span class="step-number">3.</span> Разработайте инструкцию</div>
-                    <div class="step-content">
-                        <p>Слушатель ленив, как и ты — поэтому нужно дать ему простую инструкцию для внедрения или лучшего понимания твоей мысли.</p>
-                        <div class="example">
-                            1. Определите результат, который нужен к концу недели.<br>
-                            2. Сколько вам нужно делать каждый день для результата?<br>
-                            3. Какие задачи можно отложить или делегировать?<br>
-                            4. В какой день вы готовы взять на себя больше нагрузки, чтобы высвободить другие дни?
-                        </div>
-                    </div>
-                </div>
-                <div class="step-accordion">
-                    <div class="step-header"><span class="step-number">4.</span> Добавьте вовлеченность</div>
-                    <div class="step-content">
-                        <div class="tip-box">
-                            <i class="fas fa-rocket"></i>
-                            <p><strong>Совет:</strong> У нас ограниченный ресурс внимания — поэтому очень важно его поддерживать. Не надо использовать все способы. Как видишь, они отличаются друг от друга сложностью. Чем длиннее выступление, тем больше можешь использовать вовлечений. Если предстоит небольшое выступление — достаточно одного сложного и несколько простых (например: история, метафора и демонстрация). <b>Идеально — это в совершенстве овладеть несколькими и их использовать.</b></p>
-                        </div>
-                        <div class="example">
-                            <b>ВОПРОС К АУДИТОРИИ:</b> Как сами думаете, какие есть причины, почему вас не повышают?
-                        </div>
-                        <div class="example">
-                            <b>ИНТЕРАКТИВ:</b> Давайте представим с вами ситуацию... как бы вы поступили?
-                        </div>
-                        <div class="example">
-                            <b>ПЕРЕХОД К ДРУГОМУ ФОРМАТУ:</b> Сейчас я покажу вам видео... (или если вы до этого долго говорили) А теперь расскажу вам...
-                        </div>
-                        <div class="example">
-                            <b>ИСТОРИЯ:</b> Слышали про Джона Рокфеллера? Вы знали, что он начинал обычным бухгалтером?...
-                        </div>
-                        <div class="example">
-                            <b>МЕТАФОРЫ И АНАЛОГИИ:</b> Если вы будете чересчур стараться — вы упадете, как Икар.
-                        </div>
-                        <div class="example">
-                            <b>ЮМОР:</b> Игорь Рыбаков, основатель Технониколь, анекдот однажды рассказал...
-                        </div>
-                        <div class="example">
-                            <b>ПРАКТИКА:</b> Теперь давайте попробуем это на практике...
-                        </div>
-                        <div class="example">
-                            <b>ДЕМОНСТРАЦИЯ:</b> [Тут вы можете показать сами, как что-то работает. Стив Джобс на презентации iPod nano вытащил его внезапно из кармана джинс]
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ПРИМЕР "КАК ЭТО РАБОТАЕТ" ПЕРЕМЕЩЕН ВНУТРЬ ОСНОВНОЙ ЧАСТИ -->
-                <div class="final-example-accordion">
-                    <div class="final-example-header">✅ Пример основной части</div>
-                    <div class="final-example-content">
-                        «Мы разберем три ключевых принципа карьерного роста. <b>[ЧТО ЭТО?]</b> Первое — это видимость результатов. Важно не только делать работу, но и чтобы её видели... <b>[КАК РАБОТАЕТ?]</b> Регулярно отчитываясь о проделанной работе, вы показываете начальству... <b>[РЕЗУЛЬТАТ]</b> Так руководство заметит ваш вклад и учтет это при решении о повышении....  <b>[ВОВЛЕЧЕНИЕ]</b> Знакомый поделился со мной любопытным случаем... <b>[ГЛ.МЫСЛЬ]</b> Это подтверждает, что быстрый рост возможен. <b>[ИНСТРУКЦИЯ]</b> Итак, чтобы начальство начало вам доверять, начните с еженедельного отчета из 3 пунктов: что сделано, какие результаты, что планируется...»
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ЗАВЕРШЕНИЕ (СОКРАЩЕННАЯ ВЕРСИЯ) -->
-        <div class="accordion">
-            <div class="accordion-header">🏁 Завершение</div>
-            <div class="accordion-content">
-                <div class="tip-box">
-                    <i class="fas fa-film"></i>
-                    <p><strong>Совет:</strong> Завершение — это подведение итога. Из 100% информации мы запоминаем примерно 15%, поэтому <b>если твой слушатель запомнит всего 3 предложения — какие предложения это будут?</b></p>
-                </div>
-                <div class="step-accordion">
-                    <div class="step-header"><span class="step-number">1.</span> Подведите итог</div>
-                    <div class="step-content">
-                        <p>Напомните главную мысль</p>
-                        <div class="example">
-                            Главной задачей сегодня было понять — что быстрый рост возможен!
-                        </div>
-                    </div>
-                </div>
-                <div class="step-accordion">
-                    <div class="step-header"><span class="step-number">2.</span> Краткий вывод основной части</div>
-                    <div class="step-content">
-                        <p>Замкните круг — покажите прогресс.</p>
-                        <div class="example">
-                            Повышение — это плата за инициативу, и начальство готово вас повысить, нужно лишь понять за что именно.
-                        </div>
-                    </div>
-                </div>
-                <div class="step-accordion">
-                    <div class="step-header"><span class="step-number">3.</span> Призыв к действию</div>
-                    <div class="step-content">
-                        <p>Напомни, какой шаг они могут сделать.</p>
-                        <div class="example">
-                            Начните с доклада начальству о проделанной за неделю работе. Для вас это не трудно, а начальству важно.
-                        </div>
-                    </div>
-                </div>
-                <div class="step-accordion">
-                    <div class="step-header"><span class="step-number">4.</span> Завершающая фраза</div>
-                    <div class="step-content">
-                        <p>Выше перечисленного достаточно для завершения, но если хотите, то в конце можете добавить какую-нибудь мудрую мысль или цитату</p>
-                        <div class="example">
-                           "Никогда ничего не бойтесь! Живите здесь и сейчас, кайфуйте".
-                        </div>
-                      </div>
-                     </div>
-                <!-- ЗЕЛЁНЫЙ РАЗВОРАЧИВАЕМЫЙ ПРИМЕР В КОНЦЕ -->
-                <div class="final-example-accordion">
-                    <div class="final-example-header">✅ Пример завершения</div>
-                    <div class="final-example-content">
-                         <b>[ГЛ.МЫСЛЬ]</b> Я сегодня хотел вам показать, что быстрый рост возможен. <b>[КРАТКИЙ ВЫВОД]</b> На карьеру можно влиять. Ваше начальство знает, за что готово вас наградить, а вы пока нет — это и нужно узнать. <b>[ИНСТРУКЦИЯ]</b> Начните с малого. Доложите начальству о проделанной работе за неделю. 
-                        Для вас это ничего не стоит, а начальство в курсе происходящего. Это небольшое действие выделит вас среди всех, чтобы повысить. Спасибо.
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ЛИЧНЫЙ ВЗГЛЯД (РАЗВОРАЧИВАЕМЫЙ АККОРДЕОН) -->
-        <div class="personal-accordion">
-            <div class="personal-header">💡 Личный взгляд</div>
-            <div class="personal-content">
-                <h2>Мой подход к выступлениям</h2>
-                <p> Текст, который я составил выше о повышении - выдуманный - он использован в качестве примера. В своей речи <b>всегда опирайся на реальные факты</b>, если есть что-то вымышленное - об этом стоит сообщить, если конечно это не "крючок".</p>
-                
-                <p><strong>Мои ключевые принципы:</strong></p>
-                <ul>
-                    <li><strong>Структура:</strong> Мы изучили с тобой структуру выступления. Тебе остается только подставлять свои данные, и она будет работать как молоток (нечему будет ломаться)!</li>
-                    <li><strong>Новичок:</strong> Крутое выступление — это комбинация проблем, целей, крючков и т. д... По мере того как будет получаться, пробуй что-то менять. Со временем найдешь свой подход. <b>Если ты только начинаешь — пользуйся структурой.</b></li>
-                    <li><strong>Истории:</strong> Ничто так легко не запоминается, как история. На мой взгляд, это самый сильный инструмент. Потому что слушатель сам сделает для себя нужный вывод. Выбери для себя пару «крючков», которые тебе интересны, и научись хорошо использовать их. Я сам редко пользуюсь шутками, но, может, у тебя получится сыграть на этом инструменте лучше?</li>
-                    <li><strong>Энергия:</strong> Как захватывающе рассказывать? Тут дело зависит от тебя. Лучший эффект на слушателя будет, если ты будешь рассказывать о том, что тебе нравится (это, скорее всего, ты и без меня слышал). В любой теме есть то, что тебе нравится. 
-                    Я обожаю стратегии и лидерство. Но что, если выпала тема «Растения»? Я буду искать информацию о том, как растения выживают, как они уничтожают все вокруг, чтобы выжить... <b>Еще раз, в любой теме есть то, что тебе нравится!</b> Найди это.</li>
-                </ul>
-                
-                <p>Желаю тебе успехов в освоении этого ремесла.</p>
-                
-            
-            </div>
+        
+        <div class="controls">
+            <button class="start-btn" id="start">Старт</button>
+            <button class="pause-btn" id="pause">Пауза</button>
+            <button class="reset-btn" id="reset">Сброс</button>
         </div>
     </div>
 
     <script>
-        // Функция для "мерцания" главного блока (переоткрытия)
-        function flickerAccordionContent(accordionContent) {
-            const wasActive = accordionContent.classList.contains('active');
-            if (!wasActive) return;
-            accordionContent.classList.remove('active');
-            accordionContent.style.maxHeight = '0';
-            accordionContent.style.opacity = '0';
-            requestAnimationFrame(() => {
-                accordionContent.classList.add('active');
-                accordionContent.style.opacity = '1';
-                accordionContent.style.maxHeight = accordionContent.scrollHeight + 'px';
-            });
+        let timer = document.getElementById('timer');
+        let startBtn = document.getElementById('start');
+        let pauseBtn = document.getElementById('pause');
+        let resetBtn = document.getElementById('reset');
+        let add5Btn = document.getElementById('add5');
+        let add10Btn = document.getElementById('add10');
+        let add15Btn = document.getElementById('add15');
+        
+        let timeLeft = 0;
+        let timerInterval = null;
+        let isRunning = false;
+        
+        function updateDisplay() {
+            let minutes = Math.floor(timeLeft / 60);
+            let seconds = timeLeft % 60;
+            
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+            
+            timer.textContent = `${minutes}:${seconds}`;
+            
+            if (timeLeft === 0 && isRunning) {
+                timer.classList.add('finished');
+                clearInterval(timerInterval);
+                isRunning = false;
+                startBtn.textContent = 'Старт';
+                // Воспроизводим звук завершения (опционально)
+                try {
+                    let audio = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA');
+                    audio.play();
+                } catch(e) {
+                    // Игнорируем ошибки воспроизведения звука
+                }
+            } else {
+                timer.classList.remove('finished');
+            }
         }
-
-        // Обработчик вложенных шагов
-        document.querySelectorAll('.step-header').forEach(header => {
-            header.addEventListener('click', function () {
-                const content = this.nextElementSibling;
-                const accordionContent = this.closest('.accordion-content');
-                this.classList.toggle('active');
-                content.classList.toggle('active');
-                if (content.classList.contains('active')) {
-                    content.style.maxHeight = content.scrollHeight + 'px';
-                    content.style.opacity = '1';
-                } else {
-                    content.style.maxHeight = '0';
-                    content.style.opacity = '0';
-                }
-                flickerAccordionContent(accordionContent);
-                if (accordionContent.classList.contains('active')) {
-                    requestAnimationFrame(() => {
-                        accordionContent.style.maxHeight = accordionContent.scrollHeight + 'px';
-                    });
-                }
-            });
-        });
-
-        // Обработчик главных аккордеонов
-        document.querySelectorAll('.accordion-header').forEach(header => {
-            header.addEventListener('click', function () {
-                const accordion = this.parentElement;
-                const content = this.nextElementSibling;
-                const isActive = this.classList.contains('active');
-                document.querySelectorAll('.accordion-header').forEach(h => {
-                    if (h !== header) {
-                        h.classList.remove('active');
-                        const c = h.nextElementSibling;
-                        c.classList.remove('active');
-                        c.style.maxHeight = '0';
-                        c.style.opacity = '0';
-                    }
-                });
-                this.classList.toggle('active');
-                content.classList.toggle('active');
-                if (content.classList.contains('active')) {
-                    content.style.maxHeight = content.scrollHeight + 'px';
-                    content.style.opacity = '1';
-                } else {
-                    content.style.maxHeight = '0';
-                    content.style.opacity = '0';
-                }
-            });
-        });
-
-        // Обработчик для РАЗВОРАЧИВАЕМЫХ ЗЕЛЁНЫХ ПРИМЕРОВ
-        document.querySelectorAll('.final-example-header').forEach(header => {
-            header.addEventListener('click', function () {
-                const content = this.nextElementSibling;
-                this.classList.toggle('active');
-                content.classList.toggle('active');
-                if (content.classList.contains('active')) {
-                    content.style.maxHeight = content.scrollHeight + 'px';
-                    content.style.opacity = '1';
-                } else {
-                    content.style.maxHeight = '0';
-                    content.style.opacity = '0';
-                }
-            });
-        });
-
-        // Обработчик для ЛИЧНОГО ВЗГЛЯДА (желтый аккордеон)
-        document.querySelectorAll('.personal-header').forEach(header => {
-            header.addEventListener('click', function () {
-                const accordion = this.parentElement;
-                const content = this.nextElementSibling;
-                this.classList.toggle('active');
-                content.classList.toggle('active');
-                if (content.classList.contains('active')) {
-                    content.style.maxHeight = content.scrollHeight + 'px';
-                    content.style.opacity = '1';
-                } else {
-                    content.style.maxHeight = '0';
-                    content.style.opacity = '0';
-                }
-            });
-        });
+        
+        function startTimer() {
+            if (timeLeft > 0 && !isRunning) {
+                isRunning = true;
+                startBtn.textContent = 'Возобновить';
+                timerInterval = setInterval(() => {
+                    timeLeft--;
+                    updateDisplay();
+                }, 1000);
+            }
+        }
+        
+        function pauseTimer() {
+            if (isRunning) {
+                clearInterval(timerInterval);
+                isRunning = false;
+                startBtn.textContent = 'Возобновить';
+            }
+        }
+        
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timeLeft = 0;
+            isRunning = false;
+            startBtn.textContent = 'Старт';
+            updateDisplay();
+        }
+        
+        function addTime(minutes) {
+            timeLeft += minutes * 60;
+            updateDisplay();
+            
+            // Если таймер не запущен, автоматически запускаем его при добавлении времени
+            if (!isRunning && timeLeft > 0) {
+                startTimer();
+            }
+        }
+        
+        // Назначаем обработчики событий
+        startBtn.addEventListener('click', startTimer);
+        pauseBtn.addEventListener('click', pauseTimer);
+        resetBtn.addEventListener('click', resetTimer);
+        add5Btn.addEventListener('click', () => addTime(5));
+        add10Btn.addEventListener('click', () => addTime(10));
+        add15Btn.addEventListener('click', () => addTime(15));
+        
+        // Инициализация таймера
+        updateDisplay();
     </script>
 </body>
 </html>
