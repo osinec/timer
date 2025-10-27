@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Таймер достигатора</title>
+    <title>Таймер ддостигатора</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -27,13 +28,53 @@
             text-align: center;
             max-width: 500px;
             width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         h1 {
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             font-weight: 300;
             letter-spacing: 2px;
             color: #e0e0e0;
+            font-size: 2.2rem;
+        }
+
+        .task-input {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .task-input input {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 1.1rem;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(100, 255, 218, 0.3);
+            border-radius: 10px;
+            color: #fff;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .task-input input:focus {
+            border-color: #64ffda;
+            box-shadow: 0 0 10px rgba(100, 255, 218, 0.3);
+        }
+
+        .task-input input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .current-task {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #64ffda;
+            font-weight: 500;
+            min-height: 30px;
         }
 
         .timer-display {
@@ -74,6 +115,10 @@
             font-weight: 500;
             text-transform: uppercase;
             letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         .time-btn {
@@ -141,6 +186,41 @@
             }
         }
 
+        .task-history {
+            margin-top: 30px;
+            text-align: left;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .task-history h3 {
+            margin-bottom: 15px;
+            color: #e0e0e0;
+            font-weight: 400;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 8px;
+        }
+
+        .task-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .task-item.completed {
+            opacity: 0.7;
+            text-decoration: line-through;
+        }
+
+        .task-item .time {
+            font-size: 0.9rem;
+            color: #64ffda;
+        }
+
         @media (max-width: 480px) {
             .timer-display {
                 font-size: 3.5rem;
@@ -154,70 +234,120 @@
             button {
                 padding: 12px 20px;
             }
+            
+            .container {
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>ТАЙМЕР ДОСТИГАТОРА</h1>
-        <div class="timer-display" id="timer">00:00</div>
+        <h1><i class="fas fa-clock"></i>ТАЙМЕР ДОСТИГАТОРА</h1>
+        
+        <div class="task-input">
+            <input type="text" id="taskInput" placeholder="Введите вашу задачу...">
+        </div>
+        
+        <div class="current-task" id="currentTask"></div>
+        
+        <div class="timer-display" id="timer">25:00</div>
         
         <div class="time-buttons">
-            <button class="time-btn" id="add5">+ 5 мин</button>
-            <button class="time-btn" id="add10">+ 10 мин</button>
-            <button class="time-btn" id="add15">+ 15 мин</button>
+            <button class="time-btn" id="add5"><i class="fas fa-plus"></i> 5 мин</button>
+            <button class="time-btn" id="add10"><i class="fas fa-plus"></i> 10 мин</button>
+            <button class="time-btn" id="add15"><i class="fas fa-plus"></i> 15 мин</button>
         </div>
         
         <div class="controls">
-            <button class="start-btn" id="start">Старт</button>
-            <button class="pause-btn" id="pause">Пауза</button>
-            <button class="reset-btn" id="reset">Сброс</button>
+            <button class="start-btn" id="start"><i class="fas fa-play"></i> Старт</button>
+            <button class="pause-btn" id="pause"><i class="fas fa-pause"></i> Пауза</button>
+            <button class="reset-btn" id="reset"><i class="fas fa-redo"></i> Сброс</button>
+        </div>
+        
+        <div class="task-history">
+            <h3><i class="fas fa-history"></i> История задач</h3>
+            <div id="taskList"></div>
         </div>
     </div>
 
     <script>
-        let timer = document.getElementById('timer');
-        let startBtn = document.getElementById('start');
-        let pauseBtn = document.getElementById('pause');
-        let resetBtn = document.getElementById('reset');
-        let add5Btn = document.getElementById('add5');
-        let add10Btn = document.getElementById('add10');
-        let add15Btn = document.getElementById('add15');
+        // Элементы DOM
+        const timer = document.getElementById('timer');
+        const startBtn = document.getElementById('start');
+        const pauseBtn = document.getElementById('pause');
+        const resetBtn = document.getElementById('reset');
+        const add5Btn = document.getElementById('add5');
+        const add10Btn = document.getElementById('add10');
+        const add15Btn = document.getElementById('add15');
+        const taskInput = document.getElementById('taskInput');
+        const currentTask = document.getElementById('currentTask');
+        const taskList = document.getElementById('taskList');
         
-        let timeLeft = 0;
+        // Переменные таймера
+        let timeLeft = 25 * 60; // 25 минут по умолчанию
         let timerInterval = null;
         let isRunning = false;
+        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
         
+        // Обновление отображения таймера
         function updateDisplay() {
-            let minutes = Math.floor(timeLeft / 60);
-            let seconds = timeLeft % 60;
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
             
-            minutes = minutes < 10 ? '0' + minutes : minutes;
-            seconds = seconds < 10 ? '0' + seconds : seconds;
+            const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+            const formattedSeconds = seconds < 10 ? '0' + seconds : seconds;
             
-            timer.textContent = `${minutes}:${seconds}`;
+            timer.textContent = `${formattedMinutes}:${formattedSeconds}`;
             
             if (timeLeft === 0 && isRunning) {
                 timer.classList.add('finished');
                 clearInterval(timerInterval);
                 isRunning = false;
-                startBtn.textContent = 'Старт';
-                // Воспроизводим звук завершения (опционально)
-                try {
-                    let audio = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA');
-                    audio.play();
-                } catch(e) {
-                    // Игнорируем ошибки воспроизведения звука
+                startBtn.innerHTML = '<i class="fas fa-play"></i> Старт';
+                
+                // Помечаем текущую задачу как выполненную
+                if (currentTask.textContent !== '') {
+                    addToHistory(currentTask.textContent, true);
+                    currentTask.textContent = '';
                 }
+                
+                // Воспроизводим звук завершения
+                playNotificationSound();
             } else {
                 timer.classList.remove('finished');
             }
         }
         
+        // Воспроизведение звука уведомления
+        function playNotificationSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.1);
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.2);
+                
+                gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+            } catch (e) {
+                console.log("Аудио не поддерживается");
+            }
+        }
+        
+        // Запуск таймера
         function startTimer() {
             if (timeLeft > 0 && !isRunning) {
                 isRunning = true;
-                startBtn.textContent = 'Возобновить';
+                startBtn.innerHTML = '<i class="fas fa-play"></i> Возобновить';
                 timerInterval = setInterval(() => {
                     timeLeft--;
                     updateDisplay();
@@ -225,22 +355,25 @@
             }
         }
         
+        // Пауза таймера
         function pauseTimer() {
             if (isRunning) {
                 clearInterval(timerInterval);
                 isRunning = false;
-                startBtn.textContent = 'Возобновить';
+                startBtn.innerHTML = '<i class="fas fa-play"></i> Возобновить';
             }
         }
         
+        // Сброс таймера
         function resetTimer() {
             clearInterval(timerInterval);
-            timeLeft = 0;
+            timeLeft = 25 * 60;
             isRunning = false;
-            startBtn.textContent = 'Старт';
+            startBtn.innerHTML = '<i class="fas fa-play"></i> Старт';
             updateDisplay();
         }
         
+        // Добавление времени
         function addTime(minutes) {
             timeLeft += minutes * 60;
             updateDisplay();
@@ -251,6 +384,59 @@
             }
         }
         
+        // Установка задачи
+        function setTask() {
+            const taskText = taskInput.value.trim();
+            if (taskText) {
+                currentTask.textContent = taskText;
+                taskInput.value = '';
+                
+                // Если задача новая, добавляем в историю
+                if (!tasks.some(task => task.text === taskText && !task.completed)) {
+                    addToHistory(taskText, false);
+                }
+            }
+        }
+        
+        // Добавление задачи в историю
+        function addToHistory(taskText, completed) {
+            const task = {
+                text: taskText,
+                completed: completed,
+                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+            };
+            
+            tasks.unshift(task);
+            
+            // Сохраняем только последние 5 задач
+            if (tasks.length > 5) {
+                tasks = tasks.slice(0, 5);
+            }
+            
+            // Сохраняем в localStorage
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            
+            // Обновляем отображение
+            renderTaskHistory();
+        }
+        
+        // Отрисовка истории задач
+        function renderTaskHistory() {
+            taskList.innerHTML = '';
+            
+            tasks.forEach(task => {
+                const taskItem = document.createElement('div');
+                taskItem.className = `task-item ${task.completed ? 'completed' : ''}`;
+                
+                taskItem.innerHTML = `
+                    <span>${task.text}</span>
+                    <span class="time">${task.time}</span>
+                `;
+                
+                taskList.appendChild(taskItem);
+            });
+        }
+        
         // Назначаем обработчики событий
         startBtn.addEventListener('click', startTimer);
         pauseBtn.addEventListener('click', pauseTimer);
@@ -259,8 +445,15 @@
         add10Btn.addEventListener('click', () => addTime(10));
         add15Btn.addEventListener('click', () => addTime(15));
         
-        // Инициализация таймера
+        taskInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                setTask();
+            }
+        });
+        
+        // Инициализация
         updateDisplay();
+        renderTaskHistory();
     </script>
 </body>
 </html>
