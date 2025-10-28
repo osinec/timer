@@ -22,9 +22,6 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
-            /* Предотвращаем масштабирование */
-            touch-action: manipulation;
-            -webkit-text-size-adjust: none;
         }
 
         .container {
@@ -84,10 +81,6 @@
             box-shadow: 0 8px 25px rgba(0, 200, 83, 0.4);
         }
 
-        .reminder-btn:active {
-            transform: scale(0.98);
-        }
-
         .date-display {
             font-size: 1.4rem;
             color: #64ffda;
@@ -98,54 +91,17 @@
             border: 2px solid rgba(100, 255, 218, 0.3);
         }
 
-        .success-message {
-            margin-top: 20px;
-            padding: 20px;
-            background: rgba(0, 200, 83, 0.1);
-            border-radius: 12px;
-            border: 1px solid rgba(0, 200, 83, 0.3);
-            color: #64ffda;
-            display: none;
-        }
-
-        .active-reminders {
-            margin-top: 25px;
-            padding: 20px;
-            background: rgba(156, 39, 176, 0.1);
-            border-radius: 12px;
-            border: 1px solid rgba(156, 39, 176, 0.3);
-        }
-
-        .reminder-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            margin: 8px 0;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-        }
-
-        .notification-badge {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #ff4081;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 20px;
-            font-weight: bold;
-            display: none;
-            z-index: 1000;
-            animation: pulse 2s infinite;
-        }
-
-        .pinned-notice {
+        .warning-section {
             background: rgba(255, 193, 7, 0.1);
-            padding: 15px;
-            border-radius: 10px;
-            margin: 15px 0;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
             border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .warning-section h3 {
+            color: #ffc107;
+            margin-bottom: 10px;
         }
 
         .stats {
@@ -169,29 +125,100 @@
             color: rgba(255, 255, 255, 0.6);
         }
 
+        /* Модальное окно */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            border: 2px solid #64ffda;
+            box-shadow: 0 10px 30px rgba(100, 255, 218, 0.2);
+        }
+
+        .modal h2 {
+            color: #64ffda;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .modal p {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+
+        .modal-btn {
+            background: linear-gradient(135deg, #0088cc, #34b7f1);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .notification-badge {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #ff4081;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: none;
+            z-index: 1000;
+            animation: pulse 2s infinite;
+        }
+
         @keyframes pulse {
             0% { transform: scale(1); }
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
 
-        .browser-notification {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #4caf50;
-            color: white;
-            padding: 15px 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            z-index: 1000;
-            animation: slideDown 0.3s ease;
+        .active-reminders {
+            margin-top: 25px;
+            padding: 20px;
+            background: rgba(156, 39, 176, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(156, 39, 176, 0.3);
         }
 
-        @keyframes slideDown {
-            from { transform: translateX(-50%) translateY(-100%); opacity: 0; }
-            to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .reminder-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin: 8px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .delete-btn {
+            background: #ff1744;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
         }
 
         @media (max-width: 480px) {
@@ -215,11 +242,44 @@
         <i class="fas fa-bell"></i> Новое напоминание!
     </div>
 
+    <!-- Модальное окно подтверждения -->
+    <div class="modal" id="confirmationModal">
+        <div class="modal-content">
+            <h2><i class="fas fa-check-circle"></i> Напоминание установлено!</h2>
+            <p><strong>Через 5 дней вы получите уведомление:</strong></p>
+            <div style="background: rgba(100, 255, 218, 0.1); padding: 15px; border-radius: 8px; margin: 15px 0; font-size: 1.2rem;">
+                "Как результат?"
+            </div>
+            <p><strong>Важно:</strong> Не закрывайте эту вкладку браузера до получения уведомления.</p>
+            <p style="color: #ffc107; font-size: 0.9rem;">
+                <i class="fas fa-exclamation-triangle"></i> 
+                Если вы закроете сайт, напоминание не сработает
+            </p>
+            <button class="modal-btn" onclick="closeModal()">
+                <i class="fas fa-thumbs-up"></i> Понятно, не буду закрывать!
+            </button>
+        </div>
+    </div>
+
+    <!-- Модальное окно уведомления -->
+    <div class="modal" id="reminderModal">
+        <div class="modal-content">
+            <h2><i class="fas fa-bell"></i> Напоминание!</h2>
+            <div style="font-size: 2rem; margin: 20px 0; color: #64ffda;">
+                Как результат?
+            </div>
+            <p>Вы установили это напоминание 5 дней назад</p>
+            <button class="modal-btn" onclick="closeReminderModal()">
+                <i class="fas fa-check"></i> Отлично, спасибо!
+            </button>
+        </div>
+    </div>
+
     <div class="container">
         <h1><i class="fas fa-bell"></i> АВТО-НАПОМИНАНИЯ</h1>
         
         <div class="description">
-            <p>Нажмите кнопку - и через 5 дней получите уведомление "Как результат?"</p>
+            <p>Установите напоминание и получите уведомление прямо в браузере через 5 дней</p>
         </div>
 
         <div class="stats">
@@ -242,39 +302,42 @@
             </div>
             
             <button class="reminder-btn" id="reminderBtn">
-                <i class="fas fa-plus-circle"></i> Установить напоминание на 5 дней
+                <i class="fas fa-plus-circle"></i> Получить уведомление через 5 дней
             </button>
-            
-            <div class="pinned-notice">
-                <h4><i class="fas fa-info-circle"></i> Важно:</h4>
-                <p>Не закрывайте эту вкладку для работы напоминаний</p>
-            </div>
         </div>
 
-        <div class="success-message" id="successMessage">
-            <i class="fas fa-check-circle"></i> Напоминание установлено! Через 5 дней получите уведомление.
+        <div class="warning-section">
+            <h3><i class="fas fa-info-circle"></i> Как это работает:</h3>
+            <p>1. Нажмите кнопку "Получить уведомление через 5 дней"</p>
+            <p>2. <strong>Не закрывайте эту вкладку браузера</strong></p>
+            <p>3. Через 5 дней получите уведомление "Как результат?"</p>
+            <p style="color: #ffc107; margin-top: 10px;">
+                <i class="fas fa-exclamation-triangle"></i> 
+                Внимание: если закрыть сайт, напоминание не сработает
+            </p>
         </div>
 
         <div class="active-reminders" id="activeReminders" style="display: none;">
-            <h4><i class="fas fa-list"></i> Активные напоминания</h4>
+            <h4><i class="fas fa-list"></i> Ваши напоминания</h4>
             <div id="remindersList"></div>
         </div>
 
         <div style="margin-top: 20px; color: rgba(255,255,255,0.5); font-size: 0.9rem;">
-            <i class="fas fa-lock"></i> Работает полностью в браузере - без сервера
+            <i class="fas fa-laptop"></i> Уведомления приходят прямо в этот браузер
         </div>
     </div>
 
     <script>
         // Элементы DOM
         const reminderBtn = document.getElementById('reminderBtn');
-        const successMessage = document.getElementById('successMessage');
         const reminderDate = document.getElementById('reminderDate');
         const notificationBadge = document.getElementById('notificationBadge');
         const activeReminders = document.getElementById('activeReminders');
         const remindersList = document.getElementById('remindersList');
         const activeCount = document.getElementById('activeCount');
         const completedCount = document.getElementById('completedCount');
+        const confirmationModal = document.getElementById('confirmationModal');
+        const reminderModal = document.getElementById('reminderModal');
 
         // Рассчитываем дату через 5 дней
         function calculateReminderDate() {
@@ -296,9 +359,29 @@
             const dateInfo = calculateReminderDate();
             reminderDate.innerHTML = `
                 <i class="fas fa-calendar-day"></i><br>
-                <strong>Напоминание придёт:</strong><br>
+                <strong>Уведомление придёт:</strong><br>
                 ${dateInfo.readable}
             `;
+        }
+
+        // Показать модальное окно подтверждения
+        function showConfirmationModal() {
+            confirmationModal.style.display = 'flex';
+        }
+
+        // Закрыть модальное окно
+        function closeModal() {
+            confirmationModal.style.display = 'none';
+        }
+
+        // Показать модальное окно напоминания
+        function showReminderModal() {
+            reminderModal.style.display = 'flex';
+        }
+
+        // Закрыть модальное окно напоминания
+        function closeReminderModal() {
+            reminderModal.style.display = 'none';
         }
 
         // Запрос разрешения на уведомления
@@ -339,8 +422,8 @@
             // Сохраняем напоминание
             saveReminder(reminder);
 
-            // Показываем успех
-            showSuccessMessage();
+            // Показываем модальное окно подтверждения
+            showConfirmationModal();
 
             // Обновляем список
             updateRemindersList();
@@ -356,20 +439,12 @@
             localStorage.setItem('autoReminders', JSON.stringify(reminders));
         }
 
-        // Показать сообщение об успехе
-        function showSuccessMessage() {
-            successMessage.style.display = 'block';
-            setTimeout(() => {
-                successMessage.style.display = 'none';
-            }, 5000);
-        }
-
         // Тестовое уведомление
         function showTestNotification() {
             if (Notification.permission === "granted") {
                 const dateInfo = calculateReminderDate();
                 new Notification("✅ Напоминание установлено!", {
-                    body: `Через 5 дней (${dateInfo.readable}) вы получите: "Как результат?"`,
+                    body: `Через 5 дней (${dateInfo.readable}) вы получите уведомление в этом браузере`,
                     icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⏰</text></svg>",
                     tag: "reminder-set"
                 });
@@ -416,22 +491,8 @@
                 });
             }
 
-            // Уведомление на странице
-            showBrowserNotification(reminder.message);
-        }
-
-        // Уведомление в браузере
-        function showBrowserNotification(message) {
-            const notification = document.createElement('div');
-            notification.className = 'browser-notification';
-            notification.innerHTML = `
-                <i class="fas fa-bell"></i> ${message}
-            `;
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.remove();
-            }, 5000);
+            // Модальное окно на сайте
+            showReminderModal();
         }
 
         // Обновление списка напоминаний
@@ -458,16 +519,14 @@
                 reminderItem.className = 'reminder-item';
                 
                 const statusIcon = reminder.status === 'active' ? '🟢' : '✅';
-                const statusText = reminder.status === 'active' ? 'Активно' : 'Завершено';
+                const statusText = reminder.status === 'active' ? 'Активно (не закрывайте сайт!)' : 'Завершено';
                 
                 reminderItem.innerHTML = `
                     <div>
                         <strong>${statusIcon} ${reminderDate.toLocaleDateString('ru-RU')}</strong><br>
                         <small>"${reminder.message}" - ${statusText}</small>
                     </div>
-                    <button class="delete-btn" onclick="deleteReminder(${reminder.id})" style="
-                        background: #ff1744; color: white; border: none; padding: 6px 12px; 
-                        border-radius: 4px; cursor: pointer; font-size: 0.8rem;">
+                    <button class="delete-btn" onclick="deleteReminder(${reminder.id})">
                         <i class="fas fa-trash"></i>
                     </button>
                 `;
@@ -479,17 +538,6 @@
         function deleteReminder(id) {
             let reminders = JSON.parse(localStorage.getItem('autoReminders') || '[]');
             reminders = reminders.filter(reminder => reminder.id !== id);
-            localStorage.setItem('autoReminders', JSON.stringify(reminders));
-            updateRemindersList();
-        }
-
-        // Очистка старых напоминаний (старше 30 дней)
-        function cleanupOldReminders() {
-            const oneMonthAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
-            let reminders = JSON.parse(localStorage.getItem('autoReminders') || '[]');
-            reminders = reminders.filter(reminder => 
-                reminder.status === 'active' || reminder.timestamp > oneMonthAgo
-            );
             localStorage.setItem('autoReminders', JSON.stringify(reminders));
             updateRemindersList();
         }
@@ -510,7 +558,6 @@
         // Инициализация
         updateDateDisplay();
         updateRemindersList();
-        cleanupOldReminders();
         setupCloseWarning();
 
         // Обработчики событий
@@ -524,18 +571,6 @@
 
         // Обновляем дату каждые 10 секунд
         setInterval(updateDateDisplay, 10000);
-
-        // Показываем предупреждение если есть активные напоминания
-        window.addEventListener('load', function() {
-            const activeReminders = JSON.parse(localStorage.getItem('autoReminders') || '[]')
-                .filter(r => r.status === 'active');
-            
-            if (activeReminders.length > 0) {
-                setTimeout(() => {
-                    showBrowserNotification(`У вас ${activeReminders.length} активных напоминаний. Не закрывайте эту вкладку!`);
-                }, 2000);
-            }
-        });
     </script>
 </body>
 </html>
