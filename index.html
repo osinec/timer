@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Таймер ддостигатора</title>
+    <title>Напоминание в Telegram</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -43,413 +43,426 @@
             font-size: 2.2rem;
         }
 
-        .task-input {
-            width: 100%;
-            margin-bottom: 20px;
+        .description {
+            margin-bottom: 30px;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
         }
 
-        .task-input input {
-            width: 100%;
-            padding: 15px 20px;
-            font-size: 1.1rem;
-            background: rgba(255, 255, 255, 0.07);
-            border: 1px solid rgba(100, 255, 218, 0.3);
-            border-radius: 10px;
-            color: #fff;
-            outline: none;
-            transition: all 0.3s ease;
-        }
-
-        .task-input input:focus {
-            border-color: #64ffda;
-            box-shadow: 0 0 10px rgba(100, 255, 218, 0.3);
-        }
-
-        .task-input input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        .current-task {
-            font-size: 1.2rem;
-            margin-bottom: 20px;
-            color: #64ffda;
-            font-weight: 500;
-            min-height: 30px;
-        }
-
-        .timer-display {
-            font-size: 5rem;
-            font-weight: 300;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 30px 20px;
-            margin-bottom: 40px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            letter-spacing: 3px;
-            color: #64ffda;
-            text-shadow: 0 0 10px rgba(100, 255, 218, 0.5);
-        }
-
-        .controls {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
+        .calendar-container {
             margin-bottom: 30px;
         }
 
-        .time-buttons {
+        .calendar {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.07);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid rgba(100, 255, 218, 0.3);
+        }
+
+        .calendar-header {
             display: flex;
             justify-content: space-between;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        button {
-            padding: 15px 25px;
-            font-size: 1rem;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 8px;
+            margin-bottom: 15px;
         }
 
-        .time-btn {
-            flex: 1;
+        .calendar-header button {
+            background: transparent;
+            border: none;
+            color: #64ffda;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .calendar-header button:hover {
+            background: rgba(100, 255, 218, 0.1);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+
+        .calendar-day {
+            padding: 10px 5px;
+            text-align: center;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+        }
+
+        .calendar-date {
+            padding: 10px 5px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .calendar-date:hover {
+            background: rgba(100, 255, 218, 0.1);
+        }
+
+        .calendar-date.selected {
+            background: rgba(100, 255, 218, 0.2);
+            color: #64ffda;
+            font-weight: bold;
+        }
+
+        .calendar-date.other-month {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .telegram-section {
+            margin-top: 20px;
+            padding: 20px;
             background: rgba(41, 98, 255, 0.1);
-            color: #2962ff;
+            border-radius: 10px;
             border: 1px solid rgba(41, 98, 255, 0.3);
         }
 
-        .time-btn:hover {
-            background: rgba(41, 98, 255, 0.2);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(41, 98, 255, 0.2);
-        }
-
-        .start-btn {
-            background: linear-gradient(135deg, #00c853, #64dd17);
-            color: white;
-            box-shadow: 0 5px 15px rgba(0, 200, 83, 0.3);
-        }
-
-        .start-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 200, 83, 0.4);
-        }
-
-        .pause-btn {
-            background: linear-gradient(135deg, #ff9100, #ffab00);
-            color: white;
-            box-shadow: 0 5px 15px rgba(255, 145, 0, 0.3);
-        }
-
-        .pause-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(255, 145, 0, 0.4);
-        }
-
-        .reset-btn {
-            background: linear-gradient(135deg, #ff1744, #f50057);
-            color: white;
-            box-shadow: 0 5px 15px rgba(255, 23, 68, 0.3);
-        }
-
-        .reset-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(255, 23, 68, 0.4);
-        }
-
-        .finished {
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% {
-                color: #64ffda;
-                text-shadow: 0 0 10px rgba(100, 255, 218, 0.5);
-            }
-            50% {
-                color: #ff1744;
-                text-shadow: 0 0 15px rgba(255, 23, 68, 0.7);
-            }
-            100% {
-                color: #64ffda;
-                text-shadow: 0 0 10px rgba(100, 255, 218, 0.5);
-            }
-        }
-
-        .task-history {
-            margin-top: 30px;
-            text-align: left;
-            max-height: 150px;
-            overflow-y: auto;
-        }
-
-        .task-history h3 {
+        .telegram-section h3 {
             margin-bottom: 15px;
-            color: #e0e0e0;
-            font-weight: 400;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding-bottom: 8px;
-        }
-
-        .task-item {
-            padding: 10px;
-            margin-bottom: 8px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .task-item.completed {
-            opacity: 0.7;
-            text-decoration: line-through;
-        }
-
-        .task-item .time {
-            font-size: 0.9rem;
             color: #64ffda;
         }
 
+        .telegram-section p {
+            margin-bottom: 15px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .telegram-btn {
+            background: linear-gradient(135deg, #0088cc, #34b7f1);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 0 auto;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 136, 204, 0.3);
+            text-decoration: none;
+            width: 100%;
+        }
+
+        .telegram-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 136, 204, 0.4);
+        }
+
+        .selected-date {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: #64ffda;
+            min-height: 30px;
+        }
+
+        .notification {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 200, 83, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(0, 200, 83, 0.3);
+            color: #64ffda;
+            display: none;
+        }
+
+        .telegram-connected {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 200, 83, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(0, 200, 83, 0.3);
+            color: #64ffda;
+            display: none;
+        }
+
+        .telegram-info {
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .instructions {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 193, 7, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .instructions h4 {
+            color: #ffc107;
+            margin-bottom: 10px;
+        }
+
+        .instructions ol {
+            text-align: left;
+            padding-left: 20px;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
         @media (max-width: 480px) {
-            .timer-display {
-                font-size: 3.5rem;
-                padding: 20px 15px;
-            }
-            
-            .time-buttons {
-                flex-direction: column;
-            }
-            
-            button {
-                padding: 12px 20px;
-            }
-            
             .container {
                 padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .calendar-date {
+                padding: 8px 3px;
+                font-size: 0.9rem;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1><i class="fas fa-clock"></i>ТАЙМЕР ДОСТИГАТОРА</h1>
+        <h1><i class="fas fa-calendar-alt"></i> НАПОМИНАНИЕ В TELEGRAM</h1>
         
-        <div class="task-input">
-            <input type="text" id="taskInput" placeholder="Введите вашу задачу...">
+        <div class="description">
+            <p>Выберите дату в календаре, и в этот день вы получите сообщение в Telegram с вопросом "Как результат?"</p>
         </div>
         
-        <div class="current-task" id="currentTask"></div>
-        
-        <div class="timer-display" id="timer">5:00</div>
-        
-        <div class="time-buttons">
-            <button class="time-btn" id="add5"><i class="fas fa-plus"></i> 5 мин</button>
-            <button class="time-btn" id="add10"><i class="fas fa-plus"></i> 10 мин</button>
-            <button class="time-btn" id="add15"><i class="fas fa-plus"></i> 15 мин</button>
+        <div class="calendar-container">
+            <div class="calendar">
+                <div class="calendar-header">
+                    <button id="prevMonth"><i class="fas fa-chevron-left"></i></button>
+                    <h2 id="currentMonth">Месяц Год</h2>
+                    <button id="nextMonth"><i class="fas fa-chevron-right"></i></button>
+                </div>
+                <div class="calendar-grid" id="calendarGrid">
+                    <!-- Календарь будет сгенерирован JavaScript -->
+                </div>
+            </div>
         </div>
         
-        <div class="controls">
-            <button class="start-btn" id="start"><i class="fas fa-play"></i> Старт</button>
-            <button class="pause-btn" id="pause"><i class="fas fa-pause"></i> Пауза</button>
-            <button class="reset-btn" id="reset"><i class="fas fa-redo"></i> Сброс</button>
+        <div class="selected-date" id="selectedDate"></div>
+        
+        <div class="notification" id="notification">
+            Напоминание успешно установлено! Теперь подключите Telegram, чтобы получить уведомление.
         </div>
+        
+        <div class="telegram-section">
+            <h3><i class="fab fa-telegram"></i> Подключение Telegram</h3>
+            <p>Нажмите кнопку ниже, чтобы перейти в Telegram и подключить бота</p>
+            
+            <a href="https://t.me/d1ata_bot" class="telegram-btn" id="telegramLink" target="_blank">
+                <i class="fab fa-telegram"></i> Перейти в Telegram бота
+            </a>
+            
+            <div class="telegram-info">
+                После подключения бота вы получите подтверждение и напоминание в выбранную дату
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h4>Как это работает:</h4>
+            <ol>
+                <li>Выберите дату в календаре выше</li>
+                <li>Нажмите "Перейти в Telegram бота"</li>
+                <li>В Telegram нажмите "START" в диалоге с ботом</li>
+                <li>В выбранную дату бот пришлет вам сообщение "Как результат?"</li>
+            </ol>
+        </div>
+        
+        <div class="telegram-connected" id="telegramConnected">
+            <i class="fas fa-check-circle"></i> Telegram успешно подключен! Вы получите напоминание в выбранную дату.
         </div>
     </div>
 
     <script>
         // Элементы DOM
-        const timer = document.getElementById('timer');
-        const startBtn = document.getElementById('start');
-        const pauseBtn = document.getElementById('pause');
-        const resetBtn = document.getElementById('reset');
-        const add5Btn = document.getElementById('add5');
-        const add10Btn = document.getElementById('add10');
-        const add15Btn = document.getElementById('add15');
-        const taskInput = document.getElementById('taskInput');
-        const currentTask = document.getElementById('currentTask');
-        const taskList = document.getElementById('taskList');
+        const currentMonthElement = document.getElementById('currentMonth');
+        const calendarGrid = document.getElementById('calendarGrid');
+        const prevMonthBtn = document.getElementById('prevMonth');
+        const nextMonthBtn = document.getElementById('nextMonth');
+        const selectedDateElement = document.getElementById('selectedDate');
+        const telegramLink = document.getElementById('telegramLink');
+        const notificationElement = document.getElementById('notification');
+        const telegramConnectedElement = document.getElementById('telegramConnected');
         
-        // Переменные таймера
-        let timeLeft = 5 * 60; // 25 минут по умолчанию
-        let timerInterval = null;
-        let isRunning = false;
-        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+        // Переменные календаря
+        let currentDate = new Date();
+        let selectedDate = null;
         
-        // Обновление отображения таймера
-        function updateDisplay() {
-            const minutes = Math.floor(timeLeft / 60);
-            const seconds = timeLeft % 60;
+        // Дни недели
+        const daysOfWeek = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+        
+        // Инициализация календаря
+        function initCalendar() {
+            // Отображаем заголовок с месяцем и годом
+            const monthNames = [
+                'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+                'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
+            ];
             
-            const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
-            const formattedSeconds = seconds < 10 ? '0' + seconds : seconds;
+            currentMonthElement.textContent = `${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
             
-            timer.textContent = `${formattedMinutes}:${formattedSeconds}`;
+            // Очищаем сетку календаря
+            calendarGrid.innerHTML = '';
             
-            if (timeLeft === 0 && isRunning) {
-                timer.classList.add('finished');
-                clearInterval(timerInterval);
-                isRunning = false;
-                startBtn.innerHTML = '<i class="fas fa-play"></i> Старт';
-                
-                // Помечаем текущую задачу как выполненную
-                if (currentTask.textContent !== '') {
-                    addToHistory(currentTask.textContent, true);
-                    currentTask.textContent = '';
-                }
-                
-                // Воспроизводим звук завершения
-                playNotificationSound();
-            } else {
-                timer.classList.remove('finished');
-            }
-        }
-        
-        // Воспроизведение звука уведомления
-        function playNotificationSound() {
-            try {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-                oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.1);
-                oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.2);
-                
-                gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-                
-                oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + 0.3);
-            } catch (e) {
-                console.log("Аудио не поддерживается");
-            }
-        }
-        
-        // Запуск таймера
-        function startTimer() {
-            if (timeLeft > 0 && !isRunning) {
-                isRunning = true;
-                startBtn.innerHTML = '<i class="fas fa-play"></i> Возобновить';
-                timerInterval = setInterval(() => {
-                    timeLeft--;
-                    updateDisplay();
-                }, 1000);
-            }
-        }
-        
-        // Пауза таймера
-        function pauseTimer() {
-            if (isRunning) {
-                clearInterval(timerInterval);
-                isRunning = false;
-                startBtn.innerHTML = '<i class="fas fa-play"></i> Возобновить';
-            }
-        }
-        
-        // Сброс таймера
-        function resetTimer() {
-            clearInterval(timerInterval);
-            timeLeft = 5 * 60;
-            isRunning = false;
-            startBtn.innerHTML = '<i class="fas fa-play"></i> Старт';
-            updateDisplay();
-        }
-        
-        // Добавление времени
-        function addTime(minutes) {
-            timeLeft += minutes * 60;
-            updateDisplay();
-            
-            // Если таймер не запущен, автоматически запускаем его при добавлении времени
-            if (!isRunning && timeLeft > 0) {
-                startTimer();
-            }
-        }
-        
-        // Установка задачи
-        function setTask() {
-            const taskText = taskInput.value.trim();
-            if (taskText) {
-                currentTask.textContent = taskText;
-                taskInput.value = '';
-                
-                // Если задача новая, добавляем в историю
-                if (!tasks.some(task => task.text === taskText && !task.completed)) {
-                    addToHistory(taskText, false);
-                }
-            }
-        }
-        
-        // Добавление задачи в историю
-        function addToHistory(taskText, completed) {
-            const task = {
-                text: taskText,
-                completed: completed,
-                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
-            };
-            
-            tasks.unshift(task);
-            
-            // Сохраняем только последние 5 задач
-            if (tasks.length > 5) {
-                tasks = tasks.slice(0, 5);
-            }
-            
-            // Сохраняем в localStorage
-            localStorage.setItem('tasks', JSON.stringify(tasks));
-            
-            // Обновляем отображение
-            renderTaskHistory();
-        }
-        
-        // Отрисовка истории задач
-        function renderTaskHistory() {
-            taskList.innerHTML = '';
-            
-            tasks.forEach(task => {
-                const taskItem = document.createElement('div');
-                taskItem.className = `task-item ${task.completed ? 'completed' : ''}`;
-                
-                taskItem.innerHTML = `
-                    <span>${task.text}</span>
-                    <span class="time">${task.time}</span>
-                `;
-                
-                taskList.appendChild(taskItem);
+            // Добавляем дни недели
+            daysOfWeek.forEach(day => {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                dayElement.textContent = day;
+                calendarGrid.appendChild(dayElement);
             });
+            
+            // Получаем первый день месяца и количество дней в месяце
+            const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+            const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            
+            // Определяем день недели первого дня месяца (0 - воскресенье, 1 - понедельник, и т.д.)
+            let firstDayOfWeek = firstDay.getDay();
+            // Преобразуем воскресенье (0) в 6 для нашего календаря
+            firstDayOfWeek = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
+            
+            // Добавляем пустые ячейки для дней предыдущего месяца
+            for (let i = 0; i < firstDayOfWeek; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = 'calendar-date other-month';
+                calendarGrid.appendChild(emptyCell);
+            }
+            
+            // Добавляем дни текущего месяца
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateElement = document.createElement('div');
+                dateElement.className = 'calendar-date';
+                dateElement.textContent = day;
+                
+                // Проверяем, является ли эта дата сегодняшней
+                const today = new Date();
+                if (currentDate.getMonth() === today.getMonth() && 
+                    currentDate.getFullYear() === today.getFullYear() && 
+                    day === today.getDate()) {
+                    dateElement.style.color = '#64ffda';
+                    dateElement.style.fontWeight = 'bold';
+                }
+                
+                // Проверяем, является ли эта дата выбранной
+                if (selectedDate && 
+                    currentDate.getMonth() === selectedDate.getMonth() && 
+                    currentDate.getFullYear() === selectedDate.getFullYear() && 
+                    day === selectedDate.getDate()) {
+                    dateElement.classList.add('selected');
+                }
+                
+                dateElement.addEventListener('click', () => {
+                    selectDate(day);
+                });
+                
+                calendarGrid.appendChild(dateElement);
+            }
         }
         
-        // Назначаем обработчики событий
-        startBtn.addEventListener('click', startTimer);
-        pauseBtn.addEventListener('click', pauseTimer);
-        resetBtn.addEventListener('click', resetTimer);
-        add5Btn.addEventListener('click', () => addTime(5));
-        add10Btn.addEventListener('click', () => addTime(10));
-        add15Btn.addEventListener('click', () => addTime(15));
+        // Выбор даты
+        function selectDate(day) {
+            selectedDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+            
+            // Обновляем отображение выбранной даты
+            const dateOptions = { day: 'numeric', month: 'long', year: 'numeric' };
+            selectedDateElement.textContent = `Выбрана дата: ${selectedDate.toLocaleDateString('ru-RU', dateOptions)}`;
+            
+            // Показываем уведомление
+            notificationElement.style.display = 'block';
+            
+            // Скрываем уведомление через 5 секунд
+            setTimeout(() => {
+                notificationElement.style.display = 'none';
+            }, 5000);
+            
+            // Обновляем ссылку на Telegram с параметром даты
+            updateTelegramLink();
+            
+            // Сохраняем дату в localStorage
+            localStorage.setItem('selectedReminderDate', selectedDate.toISOString());
+            
+            // Перерисовываем календарь, чтобы выделить выбранную дату
+            initCalendar();
+        }
         
-        taskInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                setTask();
+        // Обновление ссылки на Telegram с параметром даты
+        function updateTelegramLink() {
+            if (selectedDate) {
+                const formattedDate = selectedDate.toISOString().split('T')[0];
+                telegramLink.href = `https://t.me/ResultReminderBot?start=${formattedDate}`;
+            } else {
+                telegramLink.href = 'https://t.me/ResultReminderBot';
             }
+        }
+        
+        // Загрузка сохраненной даты
+        function loadSavedDate() {
+            const savedDate = localStorage.getItem('selectedReminderDate');
+            if (savedDate) {
+                selectedDate = new Date(savedDate);
+                currentDate = new Date(selectedDate);
+                
+                // Обновляем отображение
+                const dateOptions = { day: 'numeric', month: 'long', year: 'numeric' };
+                selectedDateElement.textContent = `Выбрана дата: ${selectedDate.toLocaleDateString('ru-RU', dateOptions)}`;
+                
+                updateTelegramLink();
+            }
+        }
+        
+        // Проверка параметров URL для автоматического подключения
+        function checkUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const connected = urlParams.get('telegram_connected');
+            
+            if (connected === 'true') {
+                telegramConnectedElement.style.display = 'block';
+                
+                // Скрываем уведомление через 5 секунд
+                setTimeout(() => {
+                    telegramConnectedElement.style.display = 'none';
+                }, 5000);
+            }
+        }
+        
+        // Переключение месяцев
+        prevMonthBtn.addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            initCalendar();
         });
         
-        // Инициализация
-        updateDisplay();
-        renderTaskHistory();
+        nextMonthBtn.addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            initCalendar();
+        });
+        
+        // Инициализация при загрузке страницы
+        initCalendar();
+        loadSavedDate();
+        checkUrlParams();
+        
+        // Обновляем ссылку при загрузке
+        updateTelegramLink();
     </script>
 </body>
 </html>
