@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Автонапоминания</title>
+    <title>Темный таймер с задачами</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -43,534 +43,417 @@
             font-size: 2.2rem;
         }
 
-        .description {
-            margin-bottom: 30px;
-            color: rgba(255, 255, 255, 0.7);
-            line-height: 1.6;
+        .task-input {
+            width: 100%;
+            margin-bottom: 20px;
         }
 
-        .main-section {
-            margin: 30px 0;
-            padding: 30px;
-            background: rgba(41, 98, 255, 0.1);
+        .task-input input {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 1.1rem;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(100, 255, 218, 0.3);
+            border-radius: 10px;
+            color: #fff;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .task-input input:focus {
+            border-color: #64ffda;
+            box-shadow: 0 0 10px rgba(100, 255, 218, 0.3);
+        }
+
+        .task-input input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .current-task {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #64ffda;
+            font-weight: 500;
+            min-height: 30px;
+        }
+
+        .timer-display {
+            font-size: 5rem;
+            font-weight: 300;
+            background: rgba(255, 255, 255, 0.05);
             border-radius: 15px;
+            padding: 30px 20px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            letter-spacing: 3px;
+            color: #64ffda;
+            text-shadow: 0 0 10px rgba(100, 255, 218, 0.5);
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .time-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 15px 25px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .time-btn {
+            flex: 1;
+            background: rgba(41, 98, 255, 0.1);
+            color: #2962ff;
             border: 1px solid rgba(41, 98, 255, 0.3);
         }
 
-        .reminder-btn {
+        .time-btn:hover {
+            background: rgba(41, 98, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(41, 98, 255, 0.2);
+        }
+
+        .start-btn {
             background: linear-gradient(135deg, #00c853, #64dd17);
             color: white;
-            border: none;
-            padding: 20px 30px;
-            border-radius: 15px;
-            cursor: pointer;
-            font-size: 1.4rem;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            margin: 25px auto;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 20px rgba(0, 200, 83, 0.3);
-            width: 100%;
+            box-shadow: 0 5px 15px rgba(0, 200, 83, 0.3);
         }
 
-        .reminder-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 200, 83, 0.4);
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 200, 83, 0.4);
         }
 
-        .date-display {
-            font-size: 1.4rem;
-            color: #64ffda;
-            margin: 20px 0;
-            padding: 15px;
-            background: rgba(100, 255, 218, 0.1);
-            border-radius: 10px;
-            border: 2px solid rgba(100, 255, 218, 0.3);
-        }
-
-        .warning-section {
-            background: rgba(255, 193, 7, 0.1);
-            padding: 20px;
-            border-radius: 12px;
-            margin: 20px 0;
-            border: 1px solid rgba(255, 193, 7, 0.3);
-        }
-
-        .warning-section h3 {
-            color: #ffc107;
-            margin-bottom: 10px;
-        }
-
-        .stats {
-            display: flex;
-            justify-content: space-around;
-            margin: 20px 0;
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-number {
-            font-size: 2rem;
-            color: #64ffda;
-            font-weight: bold;
-        }
-
-        .stat-label {
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        /* Модальное окно */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            padding: 30px;
-            border-radius: 20px;
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
-            border: 2px solid #64ffda;
-            box-shadow: 0 10px 30px rgba(100, 255, 218, 0.2);
-        }
-
-        .modal h2 {
-            color: #64ffda;
-            margin-bottom: 15px;
-            font-size: 1.5rem;
-        }
-
-        .modal p {
-            margin: 10px 0;
-            line-height: 1.6;
-        }
-
-        .modal-btn {
-            background: linear-gradient(135deg, #0088cc, #34b7f1);
+        .pause-btn {
+            background: linear-gradient(135deg, #ff9100, #ffab00);
             color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1rem;
-            margin-top: 20px;
-            width: 100%;
+            box-shadow: 0 5px 15px rgba(255, 145, 0, 0.3);
         }
 
-        .notification-badge {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #ff4081;
+        .pause-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 145, 0, 0.4);
+        }
+
+        .reset-btn {
+            background: linear-gradient(135deg, #ff1744, #f50057);
             color: white;
-            padding: 10px 15px;
-            border-radius: 20px;
-            font-weight: bold;
-            display: none;
-            z-index: 1000;
-            animation: pulse 2s infinite;
+            box-shadow: 0 5px 15px rgba(255, 23, 68, 0.3);
+        }
+
+        .reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 23, 68, 0.4);
+        }
+
+        .finished {
+            animation: pulse 1.5s infinite;
         }
 
         @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+            0% {
+                color: #64ffda;
+                text-shadow: 0 0 10px rgba(100, 255, 218, 0.5);
+            }
+            50% {
+                color: #ff1744;
+                text-shadow: 0 0 15px rgba(255, 23, 68, 0.7);
+            }
+            100% {
+                color: #64ffda;
+                text-shadow: 0 0 10px rgba(100, 255, 218, 0.5);
+            }
         }
 
-        .active-reminders {
-            margin-top: 25px;
-            padding: 20px;
-            background: rgba(156, 39, 176, 0.1);
-            border-radius: 12px;
-            border: 1px solid rgba(156, 39, 176, 0.3);
+        .task-history {
+            margin-top: 30px;
+            text-align: left;
+            max-height: 150px;
+            overflow-y: auto;
         }
 
-        .reminder-item {
+        .task-history h3 {
+            margin-bottom: 15px;
+            color: #e0e0e0;
+            font-weight: 400;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 8px;
+        }
+
+        .task-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px;
-            margin: 8px 0;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
         }
 
-        .delete-btn {
-            background: #ff1744;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.8rem;
+        .task-item.completed {
+            opacity: 0.7;
+            text-decoration: line-through;
+        }
+
+        .task-item .time {
+            font-size: 0.9rem;
+            color: #64ffda;
         }
 
         @media (max-width: 480px) {
+            .timer-display {
+                font-size: 3.5rem;
+                padding: 20px 15px;
+            }
+            
+            .time-buttons {
+                flex-direction: column;
+            }
+            
+            button {
+                padding: 12px 20px;
+            }
+            
             .container {
                 padding: 20px;
-            }
-            
-            h1 {
-                font-size: 1.8rem;
-            }
-            
-            .reminder-btn {
-                padding: 18px 20px;
-                font-size: 1.2rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="notification-badge" id="notificationBadge">
-        <i class="fas fa-bell"></i> Новое напоминание!
-    </div>
-
-    <!-- Модальное окно подтверждения -->
-    <div class="modal" id="confirmationModal">
-        <div class="modal-content">
-            <h2><i class="fas fa-check-circle"></i> Напоминание установлено!</h2>
-            <p><strong>Через 5 дней вы получите уведомление:</strong></p>
-            <div style="background: rgba(100, 255, 218, 0.1); padding: 15px; border-radius: 8px; margin: 15px 0; font-size: 1.2rem;">
-                "Как результат?"
-            </div>
-            <p><strong>Важно:</strong> Не закрывайте эту вкладку браузера до получения уведомления.</p>
-            <p style="color: #ffc107; font-size: 0.9rem;">
-                <i class="fas fa-exclamation-triangle"></i> 
-                Если вы закроете сайт, напоминание не сработает
-            </p>
-            <button class="modal-btn" onclick="closeModal()">
-                <i class="fas fa-thumbs-up"></i> Понятно, не буду закрывать!
-            </button>
-        </div>
-    </div>
-
-    <!-- Модальное окно уведомления -->
-    <div class="modal" id="reminderModal">
-        <div class="modal-content">
-            <h2><i class="fas fa-bell"></i> Напоминание!</h2>
-            <div style="font-size: 2rem; margin: 20px 0; color: #64ffda;">
-                Как результат?
-            </div>
-            <p>Вы установили это напоминание 5 дней назад</p>
-            <button class="modal-btn" onclick="closeReminderModal()">
-                <i class="fas fa-check"></i> Отлично, спасибо!
-            </button>
-        </div>
-    </div>
-
     <div class="container">
-        <h1><i class="fas fa-bell"></i> АВТО-НАПОМИНАНИЯ</h1>
+        <h1><i class="fas fa-clock"></i> ТАЙМЕР</h1>
         
-        <div class="description">
-            <p>Установите напоминание и получите уведомление прямо в браузере через 5 дней</p>
-        </div>
-
-        <div class="stats">
-            <div class="stat-item">
-                <div class="stat-number" id="activeCount">0</div>
-                <div class="stat-label">Активных</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number" id="completedCount">0</div>
-                <div class="stat-label">Выполнено</div>
-            </div>
+        <div class="task-input">
+            <input type="text" id="taskInput" placeholder="Введите вашу задачу...">
         </div>
         
-        <div class="main-section">
-            <h3><i class="fas fa-magic"></i> Автоматическое напоминание</h3>
-            
-            <div class="date-display" id="reminderDate">
-                <i class="fas fa-calendar-day"></i><br>
-                Расчет даты...
-            </div>
-            
-            <button class="reminder-btn" id="reminderBtn">
-                <i class="fas fa-plus-circle"></i> Получить уведомление через 5 дней
-            </button>
+        <div class="current-task" id="currentTask"></div>
+        
+        <div class="timer-display" id="timer">25:00</div>
+        
+        <div class="time-buttons">
+            <button class="time-btn" id="add5"><i class="fas fa-plus"></i> 5 мин</button>
+            <button class="time-btn" id="add10"><i class="fas fa-plus"></i> 10 мин</button>
+            <button class="time-btn" id="add15"><i class="fas fa-plus"></i> 15 мин</button>
         </div>
-
-        <div class="warning-section">
-            <h3><i class="fas fa-info-circle"></i> Как это работает:</h3>
-            <p>1. Нажмите кнопку "Получить уведомление через 5 дней"</p>
-            <p>2. <strong>Не закрывайте эту вкладку браузера</strong></p>
-            <p>3. Через 5 дней получите уведомление "Как результат?"</p>
-            <p style="color: #ffc107; margin-top: 10px;">
-                <i class="fas fa-exclamation-triangle"></i> 
-                Внимание: если закрыть сайт, напоминание не сработает
-            </p>
+        
+        <div class="controls">
+            <button class="start-btn" id="start"><i class="fas fa-play"></i> Старт</button>
+            <button class="pause-btn" id="pause"><i class="fas fa-pause"></i> Пауза</button>
+            <button class="reset-btn" id="reset"><i class="fas fa-redo"></i> Сброс</button>
         </div>
-
-        <div class="active-reminders" id="activeReminders" style="display: none;">
-            <h4><i class="fas fa-list"></i> Ваши напоминания</h4>
-            <div id="remindersList"></div>
-        </div>
-
-        <div style="margin-top: 20px; color: rgba(255,255,255,0.5); font-size: 0.9rem;">
-            <i class="fas fa-laptop"></i> Уведомления приходят прямо в этот браузер
+        
+        <div class="task-history">
+            <h3><i class="fas fa-history"></i> История задач</h3>
+            <div id="taskList"></div>
         </div>
     </div>
 
     <script>
         // Элементы DOM
-        const reminderBtn = document.getElementById('reminderBtn');
-        const reminderDate = document.getElementById('reminderDate');
-        const notificationBadge = document.getElementById('notificationBadge');
-        const activeReminders = document.getElementById('activeReminders');
-        const remindersList = document.getElementById('remindersList');
-        const activeCount = document.getElementById('activeCount');
-        const completedCount = document.getElementById('completedCount');
-        const confirmationModal = document.getElementById('confirmationModal');
-        const reminderModal = document.getElementById('reminderModal');
-
-        // Рассчитываем дату через 5 дней
-        function calculateReminderDate() {
-            const date = new Date();
-            date.setDate(date.getDate() + 5);
-            return {
-                iso: date.toISOString().split('T')[0],
-                readable: date.toLocaleDateString('ru-RU', {
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric'
-                }),
-                timestamp: date.getTime()
-            };
-        }
-
-        // Обновляем отображение даты
-        function updateDateDisplay() {
-            const dateInfo = calculateReminderDate();
-            reminderDate.innerHTML = `
-                <i class="fas fa-calendar-day"></i><br>
-                <strong>Уведомление придёт:</strong><br>
-                ${dateInfo.readable}
-            `;
-        }
-
-        // Показать модальное окно подтверждения
-        function showConfirmationModal() {
-            confirmationModal.style.display = 'flex';
-        }
-
-        // Закрыть модальное окно
-        function closeModal() {
-            confirmationModal.style.display = 'none';
-        }
-
-        // Показать модальное окно напоминания
-        function showReminderModal() {
-            reminderModal.style.display = 'flex';
-        }
-
-        // Закрыть модальное окно напоминания
-        function closeReminderModal() {
-            reminderModal.style.display = 'none';
-        }
-
-        // Запрос разрешения на уведомления
-        async function requestNotificationPermission() {
-            if (!("Notification" in window)) {
-                alert("Этот браузер не поддерживает уведомления");
-                return false;
-            }
-            
-            if (Notification.permission === "granted") {
-                return true;
-            }
-            
-            const permission = await Notification.requestPermission();
-            return permission === "granted";
-        }
-
-        // Установка напоминания
-        async function setReminder() {
-            const permissionGranted = await requestNotificationPermission();
-            
-            if (!permissionGranted) {
-                alert("Для работы напоминаний разрешите уведомления в браузере");
-                return;
-            }
-
-            const dateInfo = calculateReminderDate();
-            
-            const reminder = {
-                id: Date.now(),
-                date: dateInfo.iso,
-                timestamp: dateInfo.timestamp,
-                message: "Как результат?",
-                created: new Date().toISOString(),
-                status: 'active'
-            };
-
-            // Сохраняем напоминание
-            saveReminder(reminder);
-
-            // Показываем модальное окно подтверждения
-            showConfirmationModal();
-
-            // Обновляем список
-            updateRemindersList();
-
-            // Показываем тестовое уведомление
-            showTestNotification();
-        }
-
-        // Сохранение напоминания
-        function saveReminder(reminder) {
-            let reminders = JSON.parse(localStorage.getItem('autoReminders') || '[]');
-            reminders.push(reminder);
-            localStorage.setItem('autoReminders', JSON.stringify(reminders));
-        }
-
-        // Тестовое уведомление
-        function showTestNotification() {
-            if (Notification.permission === "granted") {
-                const dateInfo = calculateReminderDate();
-                new Notification("✅ Напоминание установлено!", {
-                    body: `Через 5 дней (${dateInfo.readable}) вы получите уведомление в этом браузере`,
-                    icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⏰</text></svg>",
-                    tag: "reminder-set"
-                });
-            }
-        }
-
-        // Проверка напоминаний
-        function checkReminders() {
-            const now = Date.now();
-            let reminders = JSON.parse(localStorage.getItem('autoReminders') || '[]');
-            let hasNewReminders = false;
-
-            reminders.forEach(reminder => {
-                if (reminder.status === 'active' && reminder.timestamp <= now) {
-                    // Показываем уведомление
-                    showReminderNotification(reminder);
-                    
-                    // Помечаем как выполненное
-                    reminder.status = 'completed';
-                    hasNewReminders = true;
-                }
-            });
-
-            if (hasNewReminders) {
-                localStorage.setItem('autoReminders', JSON.stringify(reminders));
-                updateRemindersList();
-                
-                // Показываем бейдж
-                notificationBadge.style.display = 'block';
-                setTimeout(() => {
-                    notificationBadge.style.display = 'none';
-                }, 5000);
-            }
-        }
-
-        // Показать уведомление о напоминании
-        function showReminderNotification(reminder) {
-            // Браузерное уведомление
-            if (Notification.permission === "granted") {
-                new Notification("⏰ Напоминание!", {
-                    body: reminder.message,
-                    icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔔</text></svg>",
-                    requireInteraction: true
-                });
-            }
-
-            // Модальное окно на сайте
-            showReminderModal();
-        }
-
-        // Обновление списка напоминаний
-        function updateRemindersList() {
-            const reminders = JSON.parse(localStorage.getItem('autoReminders') || '[]');
-            const activeRemindersList = reminders.filter(r => r.status === 'active');
-            const completedRemindersList = reminders.filter(r => r.status === 'completed');
-
-            // Обновляем статистику
-            activeCount.textContent = activeRemindersList.length;
-            completedCount.textContent = completedRemindersList.length;
-
-            if (reminders.length === 0) {
-                activeReminders.style.display = 'none';
-                return;
-            }
-
-            activeReminders.style.display = 'block';
-            remindersList.innerHTML = '';
-
-            reminders.forEach((reminder) => {
-                const reminderDate = new Date(reminder.timestamp);
-                const reminderItem = document.createElement('div');
-                reminderItem.className = 'reminder-item';
-                
-                const statusIcon = reminder.status === 'active' ? '🟢' : '✅';
-                const statusText = reminder.status === 'active' ? 'Активно (не закрывайте сайт!)' : 'Завершено';
-                
-                reminderItem.innerHTML = `
-                    <div>
-                        <strong>${statusIcon} ${reminderDate.toLocaleDateString('ru-RU')}</strong><br>
-                        <small>"${reminder.message}" - ${statusText}</small>
-                    </div>
-                    <button class="delete-btn" onclick="deleteReminder(${reminder.id})">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                `;
-                remindersList.appendChild(reminderItem);
-            });
-        }
-
-        // Удаление напоминания
-        function deleteReminder(id) {
-            let reminders = JSON.parse(localStorage.getItem('autoReminders') || '[]');
-            reminders = reminders.filter(reminder => reminder.id !== id);
-            localStorage.setItem('autoReminders', JSON.stringify(reminders));
-            updateRemindersList();
-        }
-
-        // Предупреждение при закрытии
-        function setupCloseWarning() {
-            window.addEventListener('beforeunload', function (e) {
-                const activeReminders = JSON.parse(localStorage.getItem('autoReminders') || '[]')
-                    .filter(r => r.status === 'active');
-                
-                if (activeReminders.length > 0) {
-                    e.preventDefault();
-                    e.returnValue = 'У вас есть активные напоминания. Если вы закроете страницу, они не сработают.';
-                }
-            });
-        }
-
-        // Инициализация
-        updateDateDisplay();
-        updateRemindersList();
-        setupCloseWarning();
-
-        // Обработчики событий
-        reminderBtn.addEventListener('click', setReminder);
-
-        // Проверяем напоминания каждую минуту
-        setInterval(checkReminders, 60000);
+        const timer = document.getElementById('timer');
+        const startBtn = document.getElementById('start');
+        const pauseBtn = document.getElementById('pause');
+        const resetBtn = document.getElementById('reset');
+        const add5Btn = document.getElementById('add5');
+        const add10Btn = document.getElementById('add10');
+        const add15Btn = document.getElementById('add15');
+        const taskInput = document.getElementById('taskInput');
+        const currentTask = document.getElementById('currentTask');
+        const taskList = document.getElementById('taskList');
         
-        // Проверяем сразу при загрузке
-        checkReminders();
-
-        // Обновляем дату каждые 10 секунд
-        setInterval(updateDateDisplay, 10000);
+        // Переменные таймера
+        let timeLeft = 25 * 60; // 25 минут по умолчанию
+        let timerInterval = null;
+        let isRunning = false;
+        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+        
+        // Обновление отображения таймера
+        function updateDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            
+            const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+            const formattedSeconds = seconds < 10 ? '0' + seconds : seconds;
+            
+            timer.textContent = `${formattedMinutes}:${formattedSeconds}`;
+            
+            if (timeLeft === 0 && isRunning) {
+                timer.classList.add('finished');
+                clearInterval(timerInterval);
+                isRunning = false;
+                startBtn.innerHTML = '<i class="fas fa-play"></i> Старт';
+                
+                // Помечаем текущую задачу как выполненную
+                if (currentTask.textContent !== '') {
+                    addToHistory(currentTask.textContent, true);
+                    currentTask.textContent = '';
+                }
+                
+                // Воспроизводим звук завершения
+                playNotificationSound();
+            } else {
+                timer.classList.remove('finished');
+            }
+        }
+        
+        // Воспроизведение звука уведомления
+        function playNotificationSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.1);
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.2);
+                
+                gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+            } catch (e) {
+                console.log("Аудио не поддерживается");
+            }
+        }
+        
+        // Запуск таймера
+        function startTimer() {
+            if (timeLeft > 0 && !isRunning) {
+                isRunning = true;
+                startBtn.innerHTML = '<i class="fas fa-play"></i> Возобновить';
+                timerInterval = setInterval(() => {
+                    timeLeft--;
+                    updateDisplay();
+                }, 1000);
+            }
+        }
+        
+        // Пауза таймера
+        function pauseTimer() {
+            if (isRunning) {
+                clearInterval(timerInterval);
+                isRunning = false;
+                startBtn.innerHTML = '<i class="fas fa-play"></i> Возобновить';
+            }
+        }
+        
+        // Сброс таймера
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timeLeft = 25 * 60;
+            isRunning = false;
+            startBtn.innerHTML = '<i class="fas fa-play"></i> Старт';
+            updateDisplay();
+        }
+        
+        // Добавление времени
+        function addTime(minutes) {
+            timeLeft += minutes * 60;
+            updateDisplay();
+            
+            // Если таймер не запущен, автоматически запускаем его при добавлении времени
+            if (!isRunning && timeLeft > 0) {
+                startTimer();
+            }
+        }
+        
+        // Установка задачи
+        function setTask() {
+            const taskText = taskInput.value.trim();
+            if (taskText) {
+                currentTask.textContent = taskText;
+                taskInput.value = '';
+                
+                // Если задача новая, добавляем в историю
+                if (!tasks.some(task => task.text === taskText && !task.completed)) {
+                    addToHistory(taskText, false);
+                }
+            }
+        }
+        
+        // Добавление задачи в историю
+        function addToHistory(taskText, completed) {
+            const task = {
+                text: taskText,
+                completed: completed,
+                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+            };
+            
+            tasks.unshift(task);
+            
+            // Сохраняем только последние 5 задач
+            if (tasks.length > 5) {
+                tasks = tasks.slice(0, 5);
+            }
+            
+            // Сохраняем в localStorage
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            
+            // Обновляем отображение
+            renderTaskHistory();
+        }
+        
+        // Отрисовка истории задач
+        function renderTaskHistory() {
+            taskList.innerHTML = '';
+            
+            tasks.forEach(task => {
+                const taskItem = document.createElement('div');
+                taskItem.className = `task-item ${task.completed ? 'completed' : ''}`;
+                
+                taskItem.innerHTML = `
+                    <span>${task.text}</span>
+                    <span class="time">${task.time}</span>
+                `;
+                
+                taskList.appendChild(taskItem);
+            });
+        }
+        
+        // Назначаем обработчики событий
+        startBtn.addEventListener('click', startTimer);
+        pauseBtn.addEventListener('click', pauseTimer);
+        resetBtn.addEventListener('click', resetTimer);
+        add5Btn.addEventListener('click', () => addTime(5));
+        add10Btn.addEventListener('click', () => addTime(10));
+        add15Btn.addEventListener('click', () => addTime(15));
+        
+        taskInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                setTask();
+            }
+        });
+        
+        // Инициализация
+        updateDisplay();
+        renderTaskHistory();
     </script>
 </body>
 </html>
