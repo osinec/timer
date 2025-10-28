@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Темный таймер с задачами</title>
+    <title>ТАЙМЕР ДОСТИГАТОРА</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -264,11 +264,6 @@
             <button class="pause-btn" id="pause"><i class="fas fa-pause"></i> Пауза</button>
             <button class="reset-btn" id="reset"><i class="fas fa-redo"></i> Сброс</button>
         </div>
-        
-        <div class="task-history">
-            <h3><i class="fas fa-history"></i> История задач</h3>
-            <div id="taskList"></div>
-        </div>
     </div>
 
     <script>
@@ -285,7 +280,7 @@
         const taskList = document.getElementById('taskList');
         
         // Переменные таймера
-        let timeLeft = 25 * 60; // 25 минут по умолчанию
+        let timeLeft = 5 * 60; // 25 минут по умолчанию
         let timerInterval = null;
         let isRunning = false;
         let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
@@ -367,7 +362,7 @@
         // Сброс таймера
         function resetTimer() {
             clearInterval(timerInterval);
-            timeLeft = 25 * 60;
+            timeLeft = 5 * 60;
             isRunning = false;
             startBtn.innerHTML = '<i class="fas fa-play"></i> Старт';
             updateDisplay();
